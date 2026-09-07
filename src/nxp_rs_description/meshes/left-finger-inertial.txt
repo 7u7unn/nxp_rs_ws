@@ -1,0 +1,34 @@
+Mass properties of left-finger
+     Configuration: Default
+     Coordinate system: Coordinate System1
+
+Density = 1211.684249 kilograms per cubic meter
+
+Mass (user-overridden) = 0.033000 kilograms
+
+Volume = 0.000027 cubic meters
+
+Surface area = 0.024774 square meters
+
+Center of mass: ( meters )
+	X = 0.016200
+	Y = -0.014852
+	Z = 0.031385
+
+Principal axes of inertia and principal moments of inertia: ( kilograms * square meters )
+Taken at the center of mass.
+	 Ix = ( 0.000002, -0.286705,  0.958019)   	Px = 0.000010
+	 Iy = ( 1.000000, -0.000037, -0.000013)   	Py = 0.000017
+	 Iz = ( 0.000039,  0.958019,  0.286705)   	Pz = 0.000022
+
+Moments of inertia: ( kilograms * square meters )
+Taken at the center of mass and aligned with the output coordinate system. (Using positive tensor notation.)
+	Lxx = 0.000017	Lxy = 0.000000	Lxz = 0.000000
+	Lyx = 0.000000	Lyy = 0.000021	Lyz = -0.000003
+	Lzx = 0.000000	Lzy = -0.000003	Lzz = 0.000011
+
+Moments of inertia: ( kilograms * square meters )
+Taken at the output coordinate system. (Using positive tensor notation.)
+	Ixx = 0.000056	Ixy = -0.000008	Ixz = 0.000017
+	Iyx = -0.000008	Iyy = 0.000062	Iyz = -0.000019
+	Izx = 0.000017	Izy = -0.000019	Izz = 0.000027

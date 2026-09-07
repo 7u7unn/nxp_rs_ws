@@ -1,0 +1,39 @@
+base-link to joint-1
+dx	:0.0000
+dy	:0.0000
+dz	:0.0600
+
+link-1 to link-2
+dx	:0.0000
+dy	:-0.0430
+dz	:0.0445
+
+link-2 to link-3
+dx	:0.0000
+dy	:0.0460
+dz	:0.1030
+
+link-3 to link-4
+dx	:0.0000
+dy	:-0.0430
+dz	:0.0445
+
+link-4 to link-5
+dx	:0.0000
+dy	:0.0125
+dz	:0.0950
+
+link-5 to palm
+dx	:0.0000
+dy	:0.0322
+dz	:0.0824
+
+revolute to right-finger
+dx	:-13.5250
+dy	:-77.1260
+dz	:60.4000
+
+revolute to left-finger
+dx	:-13.5250
+dy	:77.1260
+dz	:60.4000

@@ -1,0 +1,34 @@
+Mass properties of link-2
+     Configuration: Default
+     Coordinate system: Coordinate System1
+
+Density = 3148.773256 kilograms per cubic meter
+
+Mass (user-overridden) = 0.405000 kilograms
+
+Volume = 0.000129 cubic meters
+
+Surface area = 0.077353 square meters
+
+Center of mass: ( meters )
+	X = -0.000157
+	Y = -0.044590
+	Z = -0.044463
+
+Principal axes of inertia and principal moments of inertia: ( kilograms * square meters )
+Taken at the center of mass.
+	 Ix = (-0.003101, -0.068302, -0.997660)   	Px = 0.000458
+	 Iy = ( 0.000300, -0.997665,  0.068302)   	Py = 0.000508
+	 Iz = (-0.999995, -0.000088,  0.003114)   	Pz = 0.000779
+
+Moments of inertia: ( kilograms * square meters )
+Taken at the center of mass and aligned with the output coordinate system. (Using positive tensor notation.)
+	Lxx = 0.000779	Lxy = 0.000000	Lxz = 0.000001
+	Lyx = 0.000000	Lyy = 0.000508	Lyz = 0.000003
+	Lzx = 0.000001	Lzy = 0.000003	Lzz = 0.000458
+
+Moments of inertia: ( kilograms * square meters )
+Taken at the output coordinate system. (Using positive tensor notation.)
+	Ixx = 0.002385	Ixy = 0.000003	Ixz = 0.000004
+	Iyx = 0.000003	Iyy = 0.001309	Iyz = 0.000806
+	Izx = 0.000004	Izy = 0.000806	Izz = 0.001264

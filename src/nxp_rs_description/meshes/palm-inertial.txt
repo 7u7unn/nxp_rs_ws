@@ -1,0 +1,32 @@
+Mass properties of palm
+     Configuration: Default
+     Coordinate system: Coordinate System1
+
+Mass (user-overridden) = 0.270000 kilograms
+
+Volume = 0.000123 cubic meters
+
+Surface area = 0.059465 square meters
+
+Center of mass: ( meters )
+	X = 0.000001
+	Y = -0.000001
+	Z = 0.042057
+
+Principal axes of inertia and principal moments of inertia: ( kilograms * square meters )
+Taken at the center of mass.
+	 Ix = ( 0.000463,  1.000000,  0.000110)   	Px = 0.000131
+	 Iy = ( 0.000110,  0.000109, -1.000000)   	Py = 0.000178
+	 Iz = (-1.000000,  0.000463, -0.000110)   	Pz = 0.000232
+
+Moments of inertia: ( kilograms * square meters )
+Taken at the center of mass and aligned with the output coordinate system. (Using positive tensor notation.)
+	Lxx = 0.000232	Lxy = 0.000000	Lxz = 0.000000
+	Lyx = 0.000000	Lyy = 0.000131	Lyz = 0.000000
+	Lzx = 0.000000	Lzy = 0.000000	Lzz = 0.000178
+
+Moments of inertia: ( kilograms * square meters )
+Taken at the output coordinate system. (Using positive tensor notation.)
+	Ixx = 0.000709	Ixy = 0.000000	Ixz = 0.000000
+	Iyx = 0.000000	Iyy = 0.000609	Iyz = 0.000000
+	Izx = 0.000000	Izy = 0.000000	Izz = 0.000178
