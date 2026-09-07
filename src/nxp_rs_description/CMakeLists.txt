@@ -11,6 +11,15 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+foreach(directory launch meshes rviz urdf)
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${directory}")
+    install(
+      DIRECTORY "${directory}"
+      DESTINATION share/${PROJECT_NAME}
+    )
+  endif()
+endforeach()
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

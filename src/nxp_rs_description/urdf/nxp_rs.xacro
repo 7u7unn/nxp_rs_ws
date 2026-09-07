@@ -1,113 +1,119 @@
-<?xml version="1.0">
+<?xml version="1.0"?>
 
 <robot name="nxp_rs" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <link name="base_link">
         <visual>
             <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/base-link.stl"/>
+                <mesh filename="package://nxp_rs_description/meshes/base-link.STL"/>
             </geometry>
         </visual>
 
     </link>
 
     <joint name="joint-1" type="revolute">
-        <parent link="base-link"/>
-        <child link="link-1"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
         <origin xyz="0.00 0.00 0.06" rpy="0.00 0.00 0.00"/>
         <axis xyz="0 0 1"/>
+        <limit lower="-3.14159" upper="3.14159" effort="1.0" velocity="1.0"/>
     </joint>
 
     <link name="link_1">
     <visual>
             <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/link-1.stl"/>
+            <mesh filename="package://nxp_rs_description/meshes/link-1.STL"/>
             </geometry>
         </visual>
 
     </link>
 
     <joint name="joint-2" type="revolute">
-        <parent link="link-1"/>
-        <child link="link-2"/>
+        <parent link="link_1"/>
+        <child link="link_2"/>
         <origin xyz="0.00 -0.043 0.0445" rpy="0.00 0.00 0.00"/>
         <axis xyz="0 1 0"/>
+        <limit lower="-3.14159" upper="3.14159" effort="1.0" velocity="1.0"/>
     </joint>
 
     <link name="link_2">
     <visual>
             <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/link-2.stl"/>
+            <mesh filename="package://nxp_rs_description/meshes/link-2.STL"/>
             </geometry>
         </visual>
 
     </link>
 
     <joint name="joint-3" type="revolute">
-        <parent link="link-2"/>
-        <child link="link-3"/>
+        <parent link="link_2"/>
+        <child link="link_3"/>
         <origin xyz="0.00 0.046 0.1030" rpy="0.00 0.00 0.00"/>
         <axis xyz="0 0 1"/>
+        <limit lower="-3.14159" upper="3.14159" effort="1.0" velocity="1.0"/>
     </joint>
 
     <link name="link_3">
     <visual>
             <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/link-3.stl"/>
-            </geometry>
-        </visual>
-
-    </link>
-
-    <joint name="joint-3" type="revolute">
-        <parent link="link-3"/>
-        <child link="link-4"/>
-        <origin xyz="0.00 -0.043 0.0445" rpy="0.00 0.00 0.00"/>
-        <axis xyz="0 1 0"/>
-    </joint>
-
-    <link name="link_4">
-    <visual>
-            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
-            <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/link-4.stl"/>
+            <mesh filename="package://nxp_rs_description/meshes/link-3.STL"/>
             </geometry>
         </visual>
 
     </link>
 
     <joint name="joint-4" type="revolute">
-        <parent link="link-4"/>
-        <child link="link-5"/>
-        <origin xyz="0.00 0.0125 0.095" rpy="0.00 0.00 0.00"/>
-        <axis xyz="0 0 1"/>
+        <parent link="link_3"/>
+        <child link="link_4"/>
+        <origin xyz="0.00 -0.043 0.0445" rpy="0.00 0.00 0.00"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.14159" upper="3.14159" effort="1.0" velocity="1.0"/>
     </joint>
 
-    <link name="link_5">
+    <link name="link_4">
     <visual>
             <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/link-5.stl"/>
+            <mesh filename="package://nxp_rs_description/meshes/link-4.STL"/>
             </geometry>
         </visual>
 
     </link>
 
     <joint name="joint-5" type="revolute">
-        <parent link="link-5"/>
+        <parent link="link_4"/>
+        <child link="link_5"/>
+        <origin xyz="0.00 0.0125 0.095" rpy="0.00 0.00 0.00"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.14159" upper="3.14159" effort="1.0" velocity="1.0"/>
+    </joint>
+
+    <link name="link_5">
+    <visual>
+            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <geometry>
+            <mesh filename="package://nxp_rs_description/meshes/link-5.STL"/>
+            </geometry>
+        </visual>
+
+    </link>
+
+    <joint name="joint-6" type="revolute">
+        <parent link="link_5"/>
         <child link="palm"/>
         <origin xyz="0.00 0.0322 0.0824" rpy="0.00 0.00 0.00"/>
         <axis xyz="0 1 0"/>
+        <limit lower="-3.14159" upper="3.14159" effort="1.0" velocity="1.0"/>
     </joint>
 
     <link name="palm">
     <visual>
             <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/palm.stl"/>
+            <mesh filename="package://nxp_rs_description/meshes/palm.STL"/>
             </geometry>
         </visual>
 
@@ -117,34 +123,36 @@
     <visual>
             <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/right-finger.stl"/>
+            <mesh filename="package://nxp_rs_description/meshes/right-finger.STL"/>
             </geometry>
         </visual>
 
     </link>
 
-    <joint name="joint_right-finger" type="linear">
+    <joint name="joint_right-finger" type="prismatic">
         <parent link="palm"/>
         <child link="right-finger"/>
         <origin xyz="-13.525 -77.126 60.400" rpy="0.00 0.00 0.00"/>
         <axis xyz="0 1 0"/>
+        <limit lower="-0.1" upper="0.1" effort="1.0" velocity="1.0"/>
     </joint>
 
     <link name="left-finger">
     <visual>
             <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
-                <mesh filename="package://nxp_rs_description/meshes/left-finger.stl"/>
+            <mesh filename="package://nxp_rs_description/meshes/left-finger.STL"/>
             </geometry>
         </visual>
 
     </link>
 
-    <joint name="joint_right-finger" type="linear">
+    <joint name="joint_left-finger" type="prismatic">
         <parent link="palm"/>
-        <child link="right-finger"/>
+        <child link="left-finger"/>
         <origin xyz="-13.525 77.126 60.400" rpy="0.00 0.00 0.00"/>
         <axis xyz="0 1 0"/>
+        <limit lower="-0.1" upper="0.1" effort="1.0" velocity="1.0"/>
     </joint>
 
 
