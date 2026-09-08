@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<library path="rs_control_hardware">
+  <class
+    name="rs_control/RobstrideSystem"
+    type="rs_control::RobstrideSystem"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>RobStride RS-00/RS-05 SocketCAN system hardware.</description>
+  </class>
+</library>

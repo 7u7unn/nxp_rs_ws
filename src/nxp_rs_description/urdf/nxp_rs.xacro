@@ -1,14 +1,35 @@
 <?xml version="1.0"?>
 
 <robot name="nxp_rs" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Inertial data: meshes/*-inertial.txt, in kg, m and kg*m^2.
+         Use the L tensor about the COM, not the I tensor about the CAD origin.
+         Reports use positive products of inertia: negate off-diagonal L terms
+         for URDF. CAD output axes align with link axes except link_2 below.
+         Existing visual corrections already place meshes in these link frames;
+         do not apply those translations again to the reported COM. -->
     <link name="base_link">
         <visual>
-            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <!-- STL mounting axis is at (20.710, 1.520, 0) mm. -->
+            <origin xyz="-0.020710 -0.001520 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
                 <mesh filename="package://nxp_rs_description/meshes/base-link.STL"/>
             </geometry>
         </visual>
 
+        <!-- SolidWorks: base-link-inertial.txt. -->
+        <inertial>
+            <origin xyz="0.000074 -0.000079 0.013768" rpy="0 0 0"/>
+            <mass value="0.370000"/>
+            <inertia ixx="0.000445" ixy="0.000001" ixz="-0.000001" iyy="0.000445" iyz="0.000001" izz="0.000672"/>
+        </inertial>
+
+        <collision>
+            <origin xyz="-0.020710 -0.001520 0.00" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/base-link-col.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="joint-1" type="revolute">
@@ -27,6 +48,19 @@
             </geometry>
         </visual>
 
+        <!-- SolidWorks: link-1-inertial.txt. -->
+        <inertial>
+            <origin xyz="-0.000147 0.003478 0.032860" rpy="0 0 0"/>
+            <mass value="0.418000"/>
+            <inertia ixx="0.000433" ixy="0.000000" ixz="0.000001" iyy="0.000278" iyz="-0.000018" izz="0.000345"/>
+        </inertial>
+
+        <collision>
+            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/link-1-col.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="joint-2" type="revolute">
@@ -45,6 +79,22 @@
             </geometry>
         </visual>
 
+        <!-- SolidWorks: link-2-inertial.txt. -->
+        <!-- Inferred CAD-to-link rotation: Rx(pi), from STL COM and tensor.
+             Transform COM and tensor by R = diag(1, -1, -1).
+             Values below are expressed in the link frame (rpy = 0). -->
+        <inertial>
+            <origin xyz="-0.000157 0.044590 0.044463" rpy="0 0 0"/>
+            <mass value="0.405000"/>
+            <inertia ixx="0.000779" ixy="0.000000" ixz="0.000001" iyy="0.000508" iyz="-0.000003" izz="0.000458"/>
+        </inertial>
+
+        <collision>
+            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/link-2-col.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="joint-3" type="revolute">
@@ -63,6 +113,19 @@
             </geometry>
         </visual>
 
+        <!-- SolidWorks: link-3-inertial.txt. -->
+        <inertial>
+            <origin xyz="0.000004 0.003478 0.033003" rpy="0 0 0"/>
+            <mass value="0.418000"/>
+            <inertia ixx="0.000436" ixy="0.000000" ixz="0.000000" iyy="0.000280" iyz="-0.000018" izz="0.000343"/>
+        </inertial>
+
+        <collision>
+            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/link-3-col.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="joint-4" type="revolute">
@@ -75,12 +138,26 @@
 
     <link name="link_4">
     <visual>
-            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <!-- STL lower pivot is at (24.240, 0, 20.200) mm. -->
+            <origin xyz="-0.024240 0.00 -0.020200" rpy="0.00 0.00 0.00"/>
             <geometry>
             <mesh filename="package://nxp_rs_description/meshes/link-4.STL"/>
             </geometry>
         </visual>
 
+        <!-- SolidWorks: link-4-inertial.txt. -->
+        <inertial>
+            <origin xyz="0.000000 0.046390 0.067030" rpy="0 0 0"/>
+            <mass value="0.260000"/>
+            <inertia ixx="0.000525" ixy="0.000000" ixz="0.000000" iyy="0.000378" iyz="-0.000004" izz="0.000219"/>
+        </inertial>
+
+        <collision>
+            <origin xyz="-0.024240 0.00 -0.020200" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/link-4-col.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="joint-5" type="revolute">
@@ -93,12 +170,27 @@
 
     <link name="link_5">
     <visual>
-            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <!-- STL pivot axis is offset by +23.230 mm along X. -->
+            <origin xyz="-0.023230 0.00 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
             <mesh filename="package://nxp_rs_description/meshes/link-5.STL"/>
             </geometry>
         </visual>
 
+        <!-- SolidWorks: link-5-inertial.txt. -->
+        <inertial>
+            <origin xyz="0.000002 0.032891 0.055468" rpy="0 0 0"/>
+            <mass value="0.237000"/>
+            <inertia ixx="0.000179" ixy="0.000000" ixz="0.000000" iyy="0.000127" iyz="0.000002" izz="0.000121"/>
+        </inertial>
+
+        <collision>
+            <!-- Collision STL is 17.675 mm higher than the visual STL. -->
+            <origin xyz="-0.023230 0.00 -0.017675" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/link-5-col.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="joint-6" type="revolute">
@@ -111,22 +203,52 @@
 
     <link name="palm">
     <visual>
-            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <!-- STL wrist mounting axis is at (16.463, 16.463, 0) mm. -->
+            <origin xyz="-0.016463 -0.016463 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
             <mesh filename="package://nxp_rs_description/meshes/palm.STL"/>
             </geometry>
         </visual>
 
+        <!-- SolidWorks: palm-inertial.txt. -->
+        <inertial>
+            <origin xyz="0.000001 -0.000001 0.042057" rpy="0 0 0"/>
+            <mass value="0.270000"/>
+            <inertia ixx="0.000232" ixy="0.000000" ixz="0.000000" iyy="0.000131" iyz="0.000000" izz="0.000178"/>
+        </inertial>
+
+        <collision>
+            <!-- Collision STL centre differs from the visual export origin. -->
+            <origin xyz="-0.0256281 -0.0778969 0.00" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/palm-col.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <link name="right-finger">
     <visual>
-            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <!-- Align STL to the supplied SolidWorks Coordinate System1:
+                 mounting plane Y = 12.0597 mm, X offset = 12.928 mm. -->
+            <origin xyz="-0.012928 -0.0120597 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
             <mesh filename="package://nxp_rs_description/meshes/right-finger.STL"/>
             </geometry>
         </visual>
 
+        <!-- SolidWorks: right-finger-inertial.txt. -->
+        <inertial>
+            <origin xyz="0.016200 0.014852 0.031385" rpy="0 0 0"/>
+            <mass value="0.033000"/>
+            <inertia ixx="0.000017" ixy="0.000000" ixz="0.000000" iyy="0.000021" iyz="-0.000003" izz="0.000011"/>
+        </inertial>
+
+        <collision>
+            <origin xyz="-0.012928 -0.0120597 0.00" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/right-finger.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="joint_right-finger" type="prismatic">
@@ -139,12 +261,27 @@
 
     <link name="left-finger">
     <visual>
-            <origin xyz="0.00 0.00 0.00" rpy="0.00 0.00 0.00"/>
+            <!-- Align STL to the supplied SolidWorks Coordinate System1:
+                 mounting plane Y = 40.1475 mm, X offset = 12.928 mm. -->
+            <origin xyz="-0.012928 -0.0401475 0.00" rpy="0.00 0.00 0.00"/>
             <geometry>
             <mesh filename="package://nxp_rs_description/meshes/left-finger.STL"/>
             </geometry>
         </visual>
 
+        <!-- SolidWorks: left-finger-inertial.txt. -->
+        <inertial>
+            <origin xyz="0.016200 -0.014852 0.031385" rpy="0 0 0"/>
+            <mass value="0.033000"/>
+            <inertia ixx="0.000017" ixy="0.000000" ixz="0.000000" iyy="0.000021" iyz="0.000003" izz="0.000011"/>
+        </inertial>
+
+        <collision>
+            <origin xyz="-0.012928 -0.0401475 0.00" rpy="0.00 0.00 0.00"/>
+            <geometry>
+                <mesh filename="package://nxp_rs_description/meshes/left-finger.STL"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="joint_left-finger" type="prismatic">
@@ -153,6 +290,8 @@
         <origin xyz="-0.013525 0.077126 0.060400" rpy="0.00 0.00 0.00"/>
         <axis xyz="0 1 0"/>
         <limit lower="-0.1" upper="0.1" effort="1.0" velocity="1.0"/>
+        <!-- One physical actuator drives both mirrored fingers. -->
+        <mimic joint="joint_right-finger" multiplier="-1.0" offset="0.0"/>
     </joint>
 
 

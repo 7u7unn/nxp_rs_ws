@@ -11,7 +11,7 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-foreach(directory launch meshes rviz urdf)
+foreach(directory launch meshes rviz urdf worlds)
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${directory}")
     install(
       DIRECTORY "${directory}"

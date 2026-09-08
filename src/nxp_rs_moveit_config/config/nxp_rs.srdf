@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="nxp_rs">
+  <virtual_joint name="virtual_joint" type="fixed" parent_frame="world" child_link="base_link"/>
+
+  <!-- Six revolute joints from the base to the palm form the manipulator. -->
+  <group name="arm">
+    <chain base_link="base_link" tip_link="palm"/>
+  </group>
+
+  <!-- The right finger is the one simulated actuator; the left finger mimics it. -->
+  <group name="gripper">
+    <joint name="joint_right-finger"/>
+  </group>
+  <passive_joint name="joint_left-finger"/>
+  <end_effector name="gripper_eef" parent_link="palm" group="gripper" parent_group="arm"/>
+
+  <group_state name="home" group="arm">
+    <joint name="joint-1" value="0"/>
+    <joint name="joint-2" value="0"/>
+    <joint name="joint-3" value="0"/>
+    <joint name="joint-4" value="0"/>
+    <joint name="joint-5" value="0"/>
+    <joint name="joint-6" value="0"/>
+  </group_state>
+  <group_state name="open" group="gripper">
+    <joint name="joint_right-finger" value="0.06"/>
+  </group_state>
+  <group_state name="closed" group="gripper">
+    <joint name="joint_right-finger" value="-0.06"/>
+  </group_state>
+
+  <!-- Adjacent collision meshes are allowed to touch at their joint interfaces. -->
+  <disable_collisions link1="base_link" link2="link_1" reason="Adjacent"/>
+  <disable_collisions link1="link_1" link2="link_2" reason="Adjacent"/>
+  <disable_collisions link1="link_2" link2="link_3" reason="Adjacent"/>
+  <disable_collisions link1="link_3" link2="link_4" reason="Adjacent"/>
+  <disable_collisions link1="link_4" link2="link_5" reason="Adjacent"/>
+  <disable_collisions link1="link_5" link2="palm" reason="Adjacent"/>
+  <disable_collisions link1="palm" link2="right-finger" reason="Adjacent"/>
+  <disable_collisions link1="palm" link2="left-finger" reason="Adjacent"/>
+</robot>

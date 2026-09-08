@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<robot name="nxp_rs" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="nxp_rs.xacro"/>
+  <!-- A bench mount, not a static model: all nine physical links retain inertia. -->
+  <link name="world"/>
+  <joint name="world_to_base" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.002" rpy="0 0 0"/>
+  </joint>
+</robot>

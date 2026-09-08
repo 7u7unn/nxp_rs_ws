@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+
+<robot name="nxp_rs" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="motor_config" default="$(find rs_control)/config/robstride.yaml"/>
+  <xacro:arg name="can_interface" default="can0"/>
+  <xacro:arg name="bitrate" default="1000000"/>
+  <xacro:arg name="host_id" default="255"/>
+  <xacro:arg name="response_timeout_ms" default="20"/>
+  <xacro:arg name="poll_rate_hz" default="20.0"/>
+  <xacro:arg name="read_only" default="true"/>
+
+  <xacro:include filename="$(find nxp_rs_description)/urdf/nxp_rs.xacro"/>
+
+  <ros2_control name="robstride_system" type="system">
+    <hardware>
+      <plugin>rs_control/RobstrideSystem</plugin>
+      <param name="motor_config">$(arg motor_config)</param>
+      <param name="can_interface">$(arg can_interface)</param>
+      <param name="bitrate">$(arg bitrate)</param>
+      <param name="host_id">$(arg host_id)</param>
+      <param name="response_timeout_ms">$(arg response_timeout_ms)</param>
+      <param name="poll_rate_hz">$(arg poll_rate_hz)</param>
+      <param name="read_only">$(arg read_only)</param>
+    </hardware>
+
+    <joint name="joint-1">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="joint-2">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="joint-3">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="joint-4">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="joint-5">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="joint-6">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="joint_right-finger">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+  </ros2_control>
+</robot>

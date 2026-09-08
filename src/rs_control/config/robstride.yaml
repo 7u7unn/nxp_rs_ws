@@ -1,0 +1,71 @@
+# RobStride motor mapping for the NXP RS robot.
+#
+# Replace every id: 0 with the physical CAN ID reported by rs_scan before
+# starting either bringup launch file. The driver intentionally rejects id 0.
+# For the finger motor, replace position_scale with the measured linear travel
+# in metres per motor radian.
+
+can_interface: can0
+bitrate: 1000000
+host_id: 255
+response_timeout_ms: 20
+poll_rate_hz: 20.0
+read_only: true
+
+motors:
+  - joint: joint-1
+    id: 0
+    model: rs-00
+    direction: 1
+    position_offset: 0.0
+    position_scale: 1.0
+    kp: 10.0
+    kd: 1.0
+  - joint: joint-2
+    id: 0
+    model: rs-00
+    direction: 1
+    position_offset: 0.0
+    position_scale: 1.0
+    kp: 10.0
+    kd: 1.0
+  - joint: joint-3
+    id: 0
+    model: rs-00
+    direction: 1
+    position_offset: 0.0
+    position_scale: 1.0
+    kp: 10.0
+    kd: 1.0
+  - joint: joint-4
+    id: 0
+    model: rs-00
+    direction: 1
+    position_offset: 0.0
+    position_scale: 1.0
+    kp: 10.0
+    kd: 1.0
+  - joint: joint-5
+    id: 0
+    model: rs-05
+    direction: 1
+    position_offset: 0.0
+    position_scale: 1.0
+    kp: 10.0
+    kd: 1.0
+  - joint: joint-6
+    id: 0
+    model: rs-05
+    direction: 1
+    position_offset: 0.0
+    position_scale: 1.0
+    kp: 10.0
+    kd: 1.0
+  - joint: joint_right-finger
+    id: 0
+    model: rs-05
+    direction: 1
+    position_offset: 0.0
+    position_scale: 0.0  # TODO: metres of finger travel per motor radian
+    kp: 10.0
+    kd: 1.0

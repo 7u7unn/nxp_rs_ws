@@ -1,0 +1,6 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: nxp_rs_moveit_config
+    relative_path: config/nxp_rs_moveit.urdf.xacro
+  srdf:
+    relative_path: config/nxp_rs.srdf
