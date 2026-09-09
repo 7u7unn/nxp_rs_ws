@@ -3,7 +3,7 @@
 <package format="3">
   <name>nxp_rs_moveit_config</name>
   <version>0.1.0</version>
-  <description>MoveIt 2 configuration and simulation-only bringup for the NXP RS robot.</description>
+  <description>MoveIt 2 configuration and simulation/hardware bringup for the NXP RS robot.</description>
 
   <maintainer email="juns@todo.todo">juns</maintainer>
   <license>Apache-2.0</license>
@@ -21,6 +21,7 @@
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>ros2_control</exec_depend>
   <exec_depend>rviz2</exec_depend>
+  <exec_depend>rs_control</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>xacro</exec_depend>
 

@@ -35,6 +35,7 @@ hardware_interface::HardwareInfo make_hardware_info(const std::string & config_p
     joint.state_interfaces.push_back(interface_info(hardware_interface::HW_IF_POSITION));
     joint.state_interfaces.push_back(interface_info(hardware_interface::HW_IF_VELOCITY));
     joint.state_interfaces.push_back(interface_info(hardware_interface::HW_IF_EFFORT));
+    joint.state_interfaces.push_back(interface_info("temperature"));
     info.joints.push_back(joint);
   }
   return info;
@@ -73,11 +74,10 @@ TEST(RobstrideSystemTest, InitializesAndExportsConfiguredInterfaces)
 
   EXPECT_EQ(
     system.on_init(info), hardware_interface::CallbackReturn::SUCCESS);
-  EXPECT_EQ(system.export_state_interfaces().size(), 21U);
+  EXPECT_EQ(system.export_state_interfaces().size(), 28U);
   EXPECT_EQ(system.export_command_interfaces().size(), 7U);
   EXPECT_EQ(system.read(rclcpp::Time(0), rclcpp::Duration(0, 0)),
     hardware_interface::return_type::OK);
   EXPECT_EQ(system.write(rclcpp::Time(0), rclcpp::Duration(0, 0)),
     hardware_interface::return_type::OK);
 }
-

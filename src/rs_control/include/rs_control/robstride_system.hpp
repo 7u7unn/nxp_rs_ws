@@ -55,6 +55,7 @@ private:
   std::vector<double> state_positions_;
   std::vector<double> state_velocities_;
   std::vector<double> state_efforts_;
+  std::vector<double> state_temperatures_;
   std::vector<double> command_positions_;
   std::vector<double> pending_commands_;
   std::vector<MotorState> latest_states_;

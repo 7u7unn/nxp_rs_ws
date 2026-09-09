@@ -8,6 +8,9 @@ controller_manager:
     arm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
+    gripper_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
 arm_controller:
   ros__parameters:
     joints:
@@ -17,13 +20,31 @@ arm_controller:
       - joint-4
       - joint-5
       - joint-6
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 20.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    # Preserve the last commanded state when the jogger replaces a trajectory.
+    # This prevents a loaded joint's holding position error from being reset to
+    # measured feedback at every key press.
+    open_loop_control: true
+    interpolation_method: splines
+
+gripper_controller:
+  ros__parameters:
+    joints:
       - joint_right-finger
     command_interfaces:
       - position
     state_interfaces:
       - position
       - velocity
-      - effort
     state_publish_rate: 20.0
     action_monitor_rate: 20.0
     allow_partial_joints_goal: false
+    open_loop_control: true
+    interpolation_method: splines

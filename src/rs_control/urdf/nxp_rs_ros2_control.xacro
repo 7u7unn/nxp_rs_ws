@@ -28,42 +28,49 @@
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
+      <state_interface name="temperature"/>
     </joint>
     <joint name="joint-2">
       <command_interface name="position"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
+      <state_interface name="temperature"/>
     </joint>
     <joint name="joint-3">
       <command_interface name="position"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
+      <state_interface name="temperature"/>
     </joint>
     <joint name="joint-4">
       <command_interface name="position"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
+      <state_interface name="temperature"/>
     </joint>
     <joint name="joint-5">
       <command_interface name="position"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
+      <state_interface name="temperature"/>
     </joint>
     <joint name="joint-6">
       <command_interface name="position"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
+      <state_interface name="temperature"/>
     </joint>
     <joint name="joint_right-finger">
       <command_interface name="position"/>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
+      <state_interface name="temperature"/>
     </joint>
   </ros2_control>
 </robot>

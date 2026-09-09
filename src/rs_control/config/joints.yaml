@@ -1,0 +1,121 @@
+# Physical joint calibration measurements for the NXP RS robot.
+#
+# Encoder stop values are motor-side positions in radians. The URDF limits
+# below are derived in joint coordinates after applying each motor direction
+# in robstride.yaml and subtracting the measured zero.
+# The measured stops are intentionally preserved exactly; add an inward safety
+# margin before enabling torque if the mechanism needs clearance from its hard
+# stops.
+#
+# The repository uses hyphenated ROS joint names (joint-1, ...), not the
+# underscore names used in the handwritten measurement notes.
+
+schema_version: 1
+
+measurement_units:
+  encoder_position: rad
+  revolute_joint_position: rad
+  prismatic_joint_position: m
+
+joints:
+  joint-1:
+    id: 1
+    encoder:
+      zero_position_rad: 3.142
+      lower_stop_rad: 0.0
+      upper_stop_rad: 6.38
+    urdf:
+      type: revolute
+      lower_rad: -3.238
+      upper_rad: 3.142
+
+  joint-2:
+    id: 2
+    encoder:
+      zero_position_rad: 4.937
+      lower_stop_rad: 3.06
+      upper_stop_rad: 6.8
+    urdf:
+      type: revolute
+      lower_rad: -1.863
+      upper_rad: 1.877
+
+  joint-3:
+    id: 3
+    encoder:
+      zero_position_rad: 5.835
+      lower_stop_rad: 2.82
+      upper_stop_rad: 9.05
+    urdf:
+      type: revolute
+      lower_rad: -3.215
+      upper_rad: 3.015
+
+  joint-4:
+    id: 4
+    encoder:
+      zero_position_rad: 0.0
+      lower_stop_rad: -2.28
+      upper_stop_rad: 2.086
+    urdf:
+      type: revolute
+      lower_rad: -2.28
+      upper_rad: 2.086
+
+  joint-5:
+    id: 5
+    encoder:
+      zero_position_rad: -1.051
+      lower_stop_rad: -2.89
+      upper_stop_rad: 1.038
+    urdf:
+      type: revolute
+      lower_rad: -1.839
+      upper_rad: 2.089
+
+  joint-6:
+    id: 6
+    encoder:
+      zero_position_rad: 0.929
+      lower_stop_rad: -2.22
+      upper_stop_rad: 4.169
+    urdf:
+      type: revolute
+      lower_rad: -3.24
+      upper_rad: 3.149
+
+  # Motor 7 is rotational at the encoder, while the robot model exposes the
+  # driven right finger as a prismatic joint. Its prismatic coordinate is
+  # anchored at the measured open position (0 m). To match the reported
+  # direction, raw 0.954 rad is treated as open and raw -0.04 rad as closed;
+  # verify these endpoint labels on the physical mechanism. The
+  # encoder-relative revolute interval is retained below for reference.
+  joint_right-finger:
+    id: 7
+    encoder_type: revolute
+    urdf_type: prismatic
+    encoder:
+      zero_position_rad: 0.601
+      open_stop_rad: 0.954
+      close_stop_rad: -0.04
+    encoder_joint_limits:
+      lower_rad: -0.641
+      upper_rad: 0.353
+    physical:
+      open_position_m: 0.0
+      close_position_m: 0.0403
+    urdf:
+      type: prismatic
+      lower_m: 0.0
+      upper_m: 0.0403
+      position_scale_m_per_encoder_rad: 0.040543259557
+
+  joint_left-finger:
+    type: mimic
+    mimic:
+      joint: joint_right-finger
+      multiplier: -1.0
+    urdf:
+      type: prismatic
+      lower_m: -0.0403
+      upper_m: 0.0

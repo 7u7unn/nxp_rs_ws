@@ -39,6 +39,57 @@ uint16_t read_u16_be(const uint8_t * data)
   return static_cast<uint16_t>((static_cast<uint16_t>(data[0]) << 8) | data[1]);
 }
 
+uint32_t read_u32_le(const uint8_t * data)
+{
+  return static_cast<uint32_t>(data[0]) |
+    (static_cast<uint32_t>(data[1]) << 8) |
+    (static_cast<uint32_t>(data[2]) << 16) |
+    (static_cast<uint32_t>(data[3]) << 24);
+}
+
+std::string hex_value(uint32_t value, unsigned int width)
+{
+  std::ostringstream stream;
+  stream << "0x" << std::hex << std::setw(static_cast<int>(width)) << std::setfill('0') << value;
+  return stream.str();
+}
+
+struct NamedBit
+{
+  uint32_t mask;
+  const char * name;
+};
+
+template<std::size_t N>
+std::string describe_bits(uint32_t value, const std::array<NamedBit, N> & names)
+{
+  std::ostringstream stream;
+  bool first = true;
+  uint32_t known_bits = 0;
+  for (const auto & bit : names) {
+    known_bits |= bit.mask;
+    if ((value & bit.mask) != 0U) {
+      if (!first) {
+        stream << ", ";
+      }
+      stream << bit.name;
+      first = false;
+    }
+  }
+  const uint32_t unknown_bits = value & ~known_bits;
+  if (unknown_bits != 0U) {
+    if (!first) {
+      stream << ", ";
+    }
+    stream << "unknown=" << hex_value(unknown_bits, 8);
+    first = false;
+  }
+  if (first) {
+    stream << "none";
+  }
+  return stream.str();
+}
+
 float read_float_le(const uint8_t * data)
 {
   uint32_t bits = static_cast<uint32_t>(data[0]) |
@@ -109,6 +160,108 @@ double decode_u16(uint16_t value, double minimum, double maximum)
     return minimum;
   }
   return static_cast<double>(value) * (maximum - minimum) / 65535.0 + minimum;
+}
+
+std::string describe_status_flags(uint16_t status_flags)
+{
+  // Type-2 feedback stores these six protection flags in CAN-ID bits 13..8.
+  static constexpr std::array<NamedBit, 6> names{{
+    {0x2000U, "encoder uncalibrated"},
+    {0x1000U, "stall/overload"},
+    {0x0800U, "magnetic encoder fault"},
+    {0x0400U, "overtemperature"},
+    {0x0200U, "overcurrent"},
+    {0x0100U, "undervoltage"},
+  }};
+  return hex_value(status_flags, 4) + " (" + describe_bits(status_flags, names) + ")";
+}
+
+std::string describe_fault_report(uint32_t fault_code, uint32_t warning_code)
+{
+  // Type-21 payload values are little-endian.  These names are the bits
+  // documented by the RobStride RS0x protocol; unknown bits are preserved in
+  // the output rather than silently discarded for newer firmware.
+  static constexpr std::array<NamedBit, 11> fault_names{{
+    {1U << 0, "motor overtemperature"},
+    {1U << 1, "driver IC fault"},
+    {1U << 2, "undervoltage"},
+    {1U << 3, "overvoltage"},
+    {1U << 4, "B-phase overcurrent"},
+    {1U << 5, "C-phase overcurrent"},
+    {1U << 7, "encoder uncalibrated"},
+    {1U << 8, "hardware ID fault"},
+    {1U << 9, "position initialization fault"},
+    {1U << 14, "stall/overload"},
+    {1U << 16, "A-phase overcurrent"},
+  }};
+  static constexpr std::array<NamedBit, 1> warning_names{{
+    {1U << 0, "motor overtemperature warning"},
+  }};
+  return "fault=" + hex_value(fault_code, 8) + " (" +
+    describe_bits(fault_code, fault_names) + "), warning=" +
+    hex_value(warning_code, 8) + " (" + describe_bits(warning_code, warning_names) + ")";
+}
+
+ProtocolFrame make_operation_frame(
+  uint8_t device_id, MotorModel model, const OperationCommand & command)
+{
+  const MotorLimits & limits = limits_for_model(model);
+  const uint16_t torque = encode_u16(command.torque_nm, -limits.torque_nm, limits.torque_nm);
+  const uint16_t position = encode_u16(
+    command.position_rad, -limits.position_rad, limits.position_rad);
+  const uint16_t velocity = encode_u16(
+    command.velocity_rad_s, -limits.velocity_rad_s, limits.velocity_rad_s);
+  const uint16_t kp = encode_u16(command.kp, 0.0, limits.kp);
+  const uint16_t kd = encode_u16(command.kd, 0.0, limits.kd);
+
+  ProtocolFrame frame;
+  frame.id = compose_extended_id(kOperationControl, torque, device_id);
+  write_u16_be(frame.data.data(), position);
+  write_u16_be(frame.data.data() + 2, velocity);
+  write_u16_be(frame.data.data() + 4, kp);
+  write_u16_be(frame.data.data() + 6, kd);
+  return frame;
+}
+
+ProtocolFrame make_feedback_request_frame(uint8_t host_id, uint8_t device_id)
+{
+  ProtocolFrame frame;
+  frame.id = compose_extended_id(kOperationStatus, host_id, device_id);
+  return frame;
+}
+
+ProtocolFrame make_parameter_read_frame(
+  uint8_t host_id, uint8_t device_id, uint16_t parameter)
+{
+  ProtocolFrame frame;
+  frame.id = compose_extended_id(kReadParameter, host_id, device_id);
+  write_u16_le(frame.data.data(), parameter);
+  return frame;
+}
+
+ProtocolFrame make_parameter_write_frame(
+  uint8_t host_id, uint8_t device_id, uint16_t parameter,
+  const std::array<uint8_t, 4> & value)
+{
+  ProtocolFrame frame;
+  frame.id = compose_extended_id(kWriteParameter, host_id, device_id);
+  write_u16_le(frame.data.data(), parameter);
+  std::copy(value.cbegin(), value.cend(), frame.data.begin() + 4);
+  return frame;
+}
+
+ProtocolFrame make_enable_frame(uint8_t host_id, uint8_t device_id)
+{
+  ProtocolFrame frame;
+  frame.id = compose_extended_id(kEnable, host_id, device_id);
+  return frame;
+}
+
+ProtocolFrame make_disable_frame(uint8_t host_id, uint8_t device_id)
+{
+  ProtocolFrame frame;
+  frame.id = compose_extended_id(kDisable, host_id, device_id);
+  return frame;
 }
 
 RobstrideBus::RobstrideBus(BusConfig config)
@@ -190,20 +343,32 @@ bool RobstrideBus::send_frame(
   uint8_t length,
   std::string & error)
 {
+  ProtocolFrame frame;
+  frame.id = compose_extended_id(communication_type, extra_data, device_id);
+  frame.length = length;
+  if (data != nullptr && length > 0) {
+    std::copy(data, data + length, frame.data.begin());
+  }
+  return send_frame(frame, error);
+}
+
+bool RobstrideBus::send_frame(const ProtocolFrame & protocol_frame, std::string & error)
+{
   if (!is_connected()) {
     error = "CAN bus is not connected";
     return false;
   }
-  if (device_id == 0 || length > CAN_MAX_DLEN) {
+  const uint8_t device_id = static_cast<uint8_t>(protocol_frame.id & 0xFFU);
+  if (device_id == 0 || protocol_frame.length > CAN_MAX_DLEN) {
     error = "invalid RobStride frame target or data length";
     return false;
   }
 
   can_frame frame{};
-  frame.can_id = CAN_EFF_FLAG | compose_extended_id(communication_type, extra_data, device_id);
-  frame.can_dlc = length;
-  if (data != nullptr && length > 0) {
-    std::memcpy(frame.data, data, length);
+  frame.can_id = CAN_EFF_FLAG | (protocol_frame.id & CAN_EFF_MASK);
+  frame.can_dlc = protocol_frame.length;
+  if (protocol_frame.length > 0) {
+    std::memcpy(frame.data, protocol_frame.data.data(), protocol_frame.length);
   }
 
   const ssize_t written = write(socket_fd_, &frame, sizeof(frame));
@@ -267,8 +432,19 @@ bool RobstrideBus::receive_frame(
     {
       continue;
     }
-    if (check_device_id && (extra_data & 0xFFU) != device_id) {
-      continue;
+    if (check_device_id) {
+      // Type-2 and parameter responses put the responding motor ID in the
+      // low byte of data-area 2.  Some firmware revisions use the low byte of
+      // the CAN ID for type-21 fault reports instead; accept either documented
+      // layout, but never accept a report that names neither this motor nor
+      // the requested one.
+      const bool matches_extra_id = (extra_data & 0xFFU) == device_id;
+      const bool matches_source_id = source_id == device_id;
+      const bool matches = communication_type == kFaultReport ?
+        (matches_extra_id || matches_source_id) : matches_extra_id;
+      if (!matches) {
+        continue;
+      }
     }
 
     frame.communication_type = communication_type;
@@ -288,20 +464,56 @@ bool RobstrideBus::receive_frame(
 bool RobstrideBus::receive_status(
   uint8_t device_id, MotorState & state, std::string & error, MotorModel model)
 {
+  state.valid = false;
+  state.status_flags = 0;
+  state.fault_code = 0;
+  state.warning_code = 0;
   ReceivedFrame frame;
   if (!receive_frame({kOperationStatus, kFaultReport}, device_id, true, frame, error)) {
     return false;
   }
 
-  state.status_flags = static_cast<uint16_t>(frame.extra_data & 0x3F00U);
   if (frame.communication_type == kFaultReport) {
-    error = "motor " + std::to_string(device_id) + " returned a fault report";
-    state.valid = false;
+    state.status_flags = 0;
+    if (frame.length < 8) {
+      error = "motor " + std::to_string(device_id) +
+        " returned a truncated fault report (length=" +
+        std::to_string(frame.length) + ", data=";
+      for (std::size_t index = 0; index < frame.length; ++index) {
+        if (index != 0) {
+          error += ":";
+        }
+        error += hex_value(frame.data[index], 2).substr(2);
+      }
+      error += ")";
+      return false;
+    }
+    state.fault_code = read_u32_le(frame.data.data());
+    state.warning_code = read_u32_le(frame.data.data() + 4);
+    error = "motor " + std::to_string(device_id) + " returned a fault report (" +
+      describe_fault_report(state.fault_code, state.warning_code) +
+      ", extra_data=" + hex_value(frame.extra_data, 4) +
+      ", source_id=" + hex_value(frame.source_id, 2) +
+      ", data=";
+    for (std::size_t index = 0; index < frame.length; ++index) {
+      if (index != 0) {
+        error += ":";
+      }
+      error += hex_value(frame.data[index], 2).substr(2);
+    }
+    error += ")";
+    return false;
+  }
+
+  state.status_flags = static_cast<uint16_t>(frame.extra_data & 0x3F00U);
+  if (state.status_flags != 0U) {
+    error = "motor " + std::to_string(device_id) +
+      " operation status reports protection flags " + describe_status_flags(state.status_flags) +
+      " (extra_data=" + hex_value(frame.extra_data, 4) + ")";
     return false;
   }
   if (frame.length < 8) {
     error = "operation status frame is shorter than eight bytes";
-    state.valid = false;
     return false;
   }
 
@@ -364,9 +576,8 @@ bool RobstrideBus::scan(
 bool RobstrideBus::read_parameter(
   uint8_t device_id, uint16_t parameter, float & value, std::string & error)
 {
-  std::array<uint8_t, 8> data{};
-  write_u16_le(data.data(), parameter);
-  if (!send_frame(kReadParameter, config_.host_id, device_id, data.data(), data.size(), error)) {
+  const ProtocolFrame request = make_parameter_read_frame(config_.host_id, device_id, parameter);
+  if (!send_frame(request, error)) {
     return false;
   }
 
@@ -385,6 +596,16 @@ bool RobstrideBus::read_parameter(
     return false;
   }
   return true;
+}
+
+bool RobstrideBus::read_status(
+  uint8_t device_id, MotorModel model, MotorState & state, std::string & error)
+{
+  const ProtocolFrame request = make_feedback_request_frame(config_.host_id, device_id);
+  if (!send_frame(request, error)) {
+    return false;
+  }
+  return receive_status(device_id, state, error, model);
 }
 
 bool RobstrideBus::read_encoder(uint8_t device_id, MotorState & state, std::string & error)
@@ -413,10 +634,10 @@ bool RobstrideBus::set_run_mode(uint8_t device_id, uint8_t mode, std::string & e
     return false;
   }
 
-  std::array<uint8_t, 8> data{};
-  write_u16_le(data.data(), kModeParameter);
-  data[4] = mode;
-  if (!send_frame(kWriteParameter, config_.host_id, device_id, data.data(), data.size(), error)) {
+  const std::array<uint8_t, 4> value{mode, 0, 0, 0};
+  const ProtocolFrame request = make_parameter_write_frame(
+    config_.host_id, device_id, kModeParameter, value);
+  if (!send_frame(request, error)) {
     return false;
   }
   MotorState state;
@@ -425,8 +646,8 @@ bool RobstrideBus::set_run_mode(uint8_t device_id, uint8_t mode, std::string & e
 
 bool RobstrideBus::enable(uint8_t device_id, MotorState & state, std::string & error)
 {
-  const uint8_t empty_data[8]{};
-  if (!send_frame(kEnable, config_.host_id, device_id, empty_data, 8, error)) {
+  const ProtocolFrame request = make_enable_frame(config_.host_id, device_id);
+  if (!send_frame(request, error)) {
     return false;
   }
   return receive_status(device_id, state, error);
@@ -434,8 +655,8 @@ bool RobstrideBus::enable(uint8_t device_id, MotorState & state, std::string & e
 
 bool RobstrideBus::disable(uint8_t device_id, MotorState & state, std::string & error)
 {
-  const uint8_t empty_data[8]{};
-  if (!send_frame(kDisable, config_.host_id, device_id, empty_data, 8, error)) {
+  const ProtocolFrame request = make_disable_frame(config_.host_id, device_id);
+  if (!send_frame(request, error)) {
     return false;
   }
   return receive_status(device_id, state, error);
@@ -448,21 +669,8 @@ bool RobstrideBus::send_operation_command(
   MotorState & state,
   std::string & error)
 {
-  const MotorLimits & limits = limits_for_model(model);
-  const uint16_t torque = encode_u16(command.torque_nm, -limits.torque_nm, limits.torque_nm);
-  const uint16_t position = encode_u16(
-    command.position_rad, -limits.position_rad, limits.position_rad);
-  const uint16_t velocity = encode_u16(
-    command.velocity_rad_s, -limits.velocity_rad_s, limits.velocity_rad_s);
-  const uint16_t kp = encode_u16(command.kp, 0.0, limits.kp);
-  const uint16_t kd = encode_u16(command.kd, 0.0, limits.kd);
-
-  std::array<uint8_t, 8> data{};
-  write_u16_be(data.data(), position);
-  write_u16_be(data.data() + 2, velocity);
-  write_u16_be(data.data() + 4, kp);
-  write_u16_be(data.data() + 6, kd);
-  if (!send_frame(kOperationControl, torque, device_id, data.data(), data.size(), error)) {
+  const ProtocolFrame request = make_operation_frame(device_id, model, command);
+  if (!send_frame(request, error)) {
     return false;
   }
   if (!receive_status(device_id, state, error, model)) {

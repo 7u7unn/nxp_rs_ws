@@ -1,13 +1,16 @@
 # RobStride motor mapping for the NXP RS robot.
 #
-# Replace every id: 0 with the physical CAN ID reported by rs_scan before
-# starting either bringup launch file. The driver intentionally rejects id 0.
-# For the finger motor, replace position_scale with the measured linear travel
-# in metres per motor radian.
+# The IDs below are the measured physical CAN IDs. Every motor ID must be
+# unique, non-zero, and different from host_id; the driver rejects id 0.
+# Encoder stop measurements and derived URDF limits are recorded in
+# joints.yaml. The arm direction signs below are calibrated against the
+# positive axes in the URDF. Motor 7 is rotational at the encoder, but its
+# ROS/URDF finger position is the measured finger travel in metres: 0.0 m open
+# and 0.0403 m closed.
 
 can_interface: can0
 bitrate: 1000000
-host_id: 255
+host_id: 255  # primary/host ID; must differ from every motor ID
 response_timeout_ms: 20
 poll_rate_hz: 20.0
 read_only: true
@@ -16,25 +19,31 @@ motors:
   - joint: joint-1
     id: 1
     model: rs-00
-    direction: 1
-    position_offset: 0.0
+    direction: -1
+    position_offset: 3.142
     position_scale: 1.0
+    motor_position_min: 0.0
+    motor_position_max: 6.38
     kp: 10.0
     kd: 1.0
   - joint: joint-2
     id: 2
     model: rs-00
-    direction: 1
-    position_offset: 0.0
+    direction: -1
+    position_offset: 4.937
     position_scale: 1.0
+    motor_position_min: 3.06
+    motor_position_max: 6.8
     kp: 10.0
     kd: 1.0
   - joint: joint-3
     id: 3
     model: rs-00
-    direction: 1
-    position_offset: 0.0
+    direction: -1
+    position_offset: 5.835
     position_scale: 1.0
+    motor_position_min: 2.82
+    motor_position_max: 9.05
     kp: 10.0
     kd: 1.0
   - joint: joint-4
@@ -43,29 +52,41 @@ motors:
     direction: 1
     position_offset: 0.0
     position_scale: 1.0
+    motor_position_min: -2.28
+    motor_position_max: 2.086
     kp: 10.0
     kd: 1.0
   - joint: joint-5
     id: 5
     model: rs-05
     direction: 1
-    position_offset: 0.0
+    position_offset: -1.051
     position_scale: 1.0
+    motor_position_min: -2.89
+    motor_position_max: 1.038
     kp: 10.0
     kd: 1.0
   - joint: joint-6
     id: 6
     model: rs-05
-    direction: 1
-    position_offset: 0.0
+    direction: -1
+    position_offset: 0.929
     position_scale: 1.0
+    motor_position_min: -2.22
+    motor_position_max: 4.169
     kp: 10.0
     kd: 1.0
   - joint: joint_right-finger
     id: 7
     model: rs-05
-    direction: 1
-    position_offset: 0.0
-    position_scale: 0.0  # TODO: metres of finger travel per motor radian
+    direction: -1
+    # Based on the reported physical/RViz inversion, the finger encoder
+    # endpoints are mapped opposite to the original calibration: raw 0.954 rad
+    # is treated as open and -0.04 rad as closed. Verify both endpoints with a
+    # small, unloaded jog before relying on this mapping.
+    position_offset: 0.954  # open encoder position; ROS joint position is 0 m
+    position_scale: 0.040543259557  # metres per encoder radian
+    motor_position_min: -0.04  # closed encoder stop [rad]
+    motor_position_max: 0.954  # open encoder stop [rad]
     kp: 10.0
     kd: 1.0

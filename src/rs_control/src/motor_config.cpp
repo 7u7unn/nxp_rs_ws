@@ -110,6 +110,18 @@ bool load_robot_config(const std::string & path, RobotConfig & config, std::stri
       if (motor_node["position_scale"]) {
         motor.position_scale = motor_node["position_scale"].as<double>();
       }
+      const bool has_position_min = static_cast<bool>(motor_node["motor_position_min"]);
+      const bool has_position_max = static_cast<bool>(motor_node["motor_position_max"]);
+      if (has_position_min != has_position_max) {
+        error = "motor entry " + std::to_string(index) +
+          " must define both motor_position_min and motor_position_max";
+        return false;
+      }
+      if (has_position_min) {
+        motor.motor_position_min = motor_node["motor_position_min"].as<double>();
+        motor.motor_position_max = motor_node["motor_position_max"].as<double>();
+        motor.has_position_limits = true;
+      }
       if (motor_node["kp"]) {
         motor.kp = motor_node["kp"].as<double>();
       }
@@ -173,12 +185,25 @@ bool validate_robot_config(const RobotConfig & config, std::string & error)
       error = "duplicate CAN id " + std::to_string(motor.id);
       return false;
     }
+    if (motor.id == config.bus.host_id) {
+      error = "motor '" + motor.joint_name + "' CAN id must differ from host_id";
+      return false;
+    }
     if (motor.direction != 1 && motor.direction != -1) {
       error = "motor '" + motor.joint_name + "' direction must be 1 or -1";
       return false;
     }
     if (!std::isfinite(motor.position_scale) || motor.position_scale <= 0.0) {
       error = "motor '" + motor.joint_name + "' position_scale must be positive";
+      return false;
+    }
+    if (motor.has_position_limits &&
+      (!std::isfinite(motor.motor_position_min) ||
+      !std::isfinite(motor.motor_position_max) ||
+      motor.motor_position_min >= motor.motor_position_max))
+    {
+      error = "motor '" + motor.joint_name +
+        "' motor position limits must be finite and strictly increasing";
       return false;
     }
     const MotorLimits & limits = limits_for_model(motor.model);
@@ -213,8 +238,14 @@ double to_joint_effort(const MotorConfig & motor, double motor_torque)
 
 double to_motor_position(const MotorConfig & motor, double joint_position)
 {
-  return joint_position * static_cast<double>(motor.direction) / motor.position_scale +
+  const double motor_position =
+    joint_position * static_cast<double>(motor.direction) / motor.position_scale +
     motor.position_offset;
+  if (motor.has_position_limits) {
+    return std::clamp(
+      motor_position, motor.motor_position_min, motor.motor_position_max);
+  }
+  return motor_position;
 }
 
 double to_motor_velocity(const MotorConfig & motor, double joint_velocity)

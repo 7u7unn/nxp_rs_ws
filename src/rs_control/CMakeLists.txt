@@ -76,12 +76,50 @@ install(
 )
 
 install(
+  DIRECTORY python/rs_control_py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  PROGRAMS
+    python/rs_python_control.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME rs_python_control
+)
+
+install(
+  PROGRAMS
+    python/rs_python_scan.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME rs_python_scan
+)
+
+install(
+  PROGRAMS
+    python/rs_python_set_id.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME rs_python_set_id
+)
+
+install(
+  PROGRAMS
+    python/rs_jog_controller.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME rs_jog_controller
+)
+
+install(
   FILES rs_control_plugins.xml
   DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_pytest REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
+
+  ament_add_pytest_test(test_python_protocol test/test_python_protocol.py)
+  ament_add_pytest_test(test_python_bus test/test_python_bus.py)
+  ament_add_pytest_test(test_jog test/test_jog.py)
 
   ament_add_gtest(test_motor_config test/test_motor_config.cpp)
   target_link_libraries(test_motor_config rs_control_core)

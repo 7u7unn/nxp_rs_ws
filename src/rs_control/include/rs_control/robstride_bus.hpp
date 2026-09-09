@@ -40,6 +40,9 @@ struct MotorConfig
   int direction{1};
   double position_offset{0.0};
   double position_scale{1.0};
+  bool has_position_limits{false};
+  double motor_position_min{0.0};
+  double motor_position_max{0.0};
   double kp{10.0};
   double kd{1.0};
 };
@@ -59,7 +62,11 @@ struct MotorState
   double velocity_rad_s{0.0};
   double torque_nm{0.0};
   double temperature_c{0.0};
+  // Raw status/fault values are retained even when a transaction fails so a
+  // caller can diagnose the motor instead of seeing only a generic timeout.
   uint16_t status_flags{0};
+  uint32_t fault_code{0};
+  uint32_t warning_code{0};
 };
 
 struct OperationCommand
@@ -77,6 +84,13 @@ struct DiscoveredMotor
   std::array<uint8_t, 8> uuid{};
 };
 
+struct ProtocolFrame
+{
+  uint32_t id{0};
+  std::array<uint8_t, 8> data{};
+  uint8_t length{8};
+};
+
 constexpr uint16_t kModeParameter = 0x7005;
 constexpr uint16_t kMeasuredPositionParameter = 0x3016;
 constexpr uint16_t kMeasuredVelocityParameter = 0x3017;
@@ -89,6 +103,28 @@ uint32_t compose_extended_id(uint8_t communication_type, uint16_t extra_data, ui
 uint16_t encode_u16(double value, double minimum, double maximum);
 
 double decode_u16(uint16_t value, double minimum, double maximum);
+
+// Human-readable names for the status and type-21 fault bit masks reported by
+// RobStride firmware.  The raw values remain available in MotorState.
+std::string describe_status_flags(uint16_t status_flags);
+
+std::string describe_fault_report(uint32_t fault_code, uint32_t warning_code);
+
+ProtocolFrame make_operation_frame(
+  uint8_t device_id, MotorModel model, const OperationCommand & command);
+
+ProtocolFrame make_feedback_request_frame(uint8_t host_id, uint8_t device_id);
+
+ProtocolFrame make_parameter_read_frame(
+  uint8_t host_id, uint8_t device_id, uint16_t parameter);
+
+ProtocolFrame make_parameter_write_frame(
+  uint8_t host_id, uint8_t device_id, uint16_t parameter,
+  const std::array<uint8_t, 4> & value);
+
+ProtocolFrame make_enable_frame(uint8_t host_id, uint8_t device_id);
+
+ProtocolFrame make_disable_frame(uint8_t host_id, uint8_t device_id);
 
 class RobstrideBus
 {
@@ -113,6 +149,9 @@ public:
   bool read_parameter(
     uint8_t device_id, uint16_t parameter, float & value, std::string & error);
 
+  bool read_status(
+    uint8_t device_id, MotorModel model, MotorState & state, std::string & error);
+
   bool read_encoder(uint8_t device_id, MotorState & state, std::string & error);
 
   bool set_run_mode(uint8_t device_id, uint8_t mode, std::string & error);
@@ -127,6 +166,8 @@ public:
     std::string & error);
 
 private:
+  bool send_frame(const ProtocolFrame & frame, std::string & error);
+
   struct ReceivedFrame
   {
     uint8_t communication_type{0};

@@ -18,6 +18,8 @@ namespace rs_control
 namespace
 {
 
+constexpr char kTemperatureInterface[] = "temperature";
+
 bool has_interface(
   const std::vector<hardware_interface::InterfaceInfo> & interfaces, const std::string & name)
 {
@@ -119,6 +121,7 @@ hardware_interface::CallbackReturn RobstrideSystem::on_init(
   state_positions_.assign(joint_count, 0.0);
   state_velocities_.assign(joint_count, 0.0);
   state_efforts_.assign(joint_count, 0.0);
+  state_temperatures_.assign(joint_count, 0.0);
   command_positions_.assign(joint_count, 0.0);
   pending_commands_.assign(joint_count, 0.0);
   latest_states_.assign(joint_count, MotorState{});
@@ -188,9 +191,11 @@ bool RobstrideSystem::validate_hardware_joints(std::string & error)
     ordered_motors.push_back(*motor);
     if (!has_interface(joint.state_interfaces, hardware_interface::HW_IF_POSITION) ||
       !has_interface(joint.state_interfaces, hardware_interface::HW_IF_VELOCITY) ||
-      !has_interface(joint.state_interfaces, hardware_interface::HW_IF_EFFORT))
+      !has_interface(joint.state_interfaces, hardware_interface::HW_IF_EFFORT) ||
+      !has_interface(joint.state_interfaces, kTemperatureInterface))
     {
-      error = "joint '" + joint.name + "' must export position, velocity, and effort states";
+      error = "joint '" + joint.name +
+        "' must export position, velocity, effort, and temperature states";
       return false;
     }
     if (!has_interface(joint.command_interfaces, hardware_interface::HW_IF_POSITION)) {
@@ -205,12 +210,13 @@ bool RobstrideSystem::validate_hardware_joints(std::string & error)
 std::vector<hardware_interface::StateInterface> RobstrideSystem::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> interfaces;
-  interfaces.reserve(info_.joints.size() * 3);
+  interfaces.reserve(info_.joints.size() * 4);
   for (std::size_t index = 0; index < info_.joints.size(); ++index) {
     const std::string & name = info_.joints[index].name;
     interfaces.emplace_back(name, hardware_interface::HW_IF_POSITION, &state_positions_[index]);
     interfaces.emplace_back(name, hardware_interface::HW_IF_VELOCITY, &state_velocities_[index]);
     interfaces.emplace_back(name, hardware_interface::HW_IF_EFFORT, &state_efforts_[index]);
+    interfaces.emplace_back(name, kTemperatureInterface, &state_temperatures_[index]);
   }
   return interfaces;
 }
@@ -230,10 +236,14 @@ bool RobstrideSystem::read_all_initial_states(std::string & error)
 {
   for (std::size_t index = 0; index < config_.motors.size(); ++index) {
     MotorState state;
-    if (!bus_->read_encoder(config_.motors[index].id, state, error)) {
+    const MotorConfig & motor = config_.motors[index];
+    if (!bus_->read_status(
+        motor.id, motor.model, state, error))
+    {
+      error = "initial status read failed for " + motor.joint_name +
+        " (motor " + std::to_string(motor.id) + "): " + error;
       return false;
     }
-    const MotorConfig & motor = config_.motors[index];
     const double position = to_joint_position(motor, state.position_rad);
     const double velocity = to_joint_velocity(motor, state.velocity_rad_s);
     const double effort = to_joint_effort(motor, state.torque_nm);
@@ -242,6 +252,7 @@ bool RobstrideSystem::read_all_initial_states(std::string & error)
     state_positions_[index] = position;
     state_velocities_[index] = velocity;
     state_efforts_[index] = effort;
+    state_temperatures_[index] = state.temperature_c;
     command_positions_[index] = position;
     pending_commands_[index] = position;
   }
@@ -263,18 +274,34 @@ hardware_interface::CallbackReturn RobstrideSystem::on_activate(
 
   if (!config_.read_only) {
     if (!read_all_initial_states(error)) {
-      std::cerr << "[rs_control] " << error << std::endl;
+      std::cerr << "[rs_control] activation aborted: " << error << std::endl;
+      // The initial status request may have failed while a motor was already
+      // enabled by another process.  Best-effort disable before dropping the
+      // bus so an activation failure never leaves torque enabled.
+      disable_all_motors();
       bus_->disconnect();
       return hardware_interface::CallbackReturn::ERROR;
     }
     for (const auto & motor : config_.motors) {
       MotorState state;
-      if (!bus_->disable(motor.id, state, error) ||
-        !bus_->set_run_mode(motor.id, 0, error) ||
-        !bus_->enable(motor.id, state, error))
-      {
-        std::cerr << "[rs_control] failed to activate " << motor.joint_name << ": " << error
-                  << std::endl;
+      if (!bus_->disable(motor.id, state, error)) {
+        std::cerr << "[rs_control] activation aborted for " << motor.joint_name <<
+          " (motor " << static_cast<int>(motor.id) << ") during disable: " << error << std::endl;
+        disable_all_motors();
+        bus_->disconnect();
+        return hardware_interface::CallbackReturn::ERROR;
+      }
+      if (!bus_->set_run_mode(motor.id, 0, error)) {
+        std::cerr << "[rs_control] activation aborted for " << motor.joint_name <<
+          " (motor " << static_cast<int>(motor.id) << ") during set_run_mode(0): " << error <<
+          std::endl;
+        disable_all_motors();
+        bus_->disconnect();
+        return hardware_interface::CallbackReturn::ERROR;
+      }
+      if (!bus_->enable(motor.id, state, error)) {
+        std::cerr << "[rs_control] activation aborted for " << motor.joint_name <<
+          " (motor " << static_cast<int>(motor.id) << ") during enable: " << error << std::endl;
         disable_all_motors();
         bus_->disconnect();
         return hardware_interface::CallbackReturn::ERROR;
@@ -319,6 +346,7 @@ hardware_interface::return_type RobstrideSystem::read(
         config_.motors[index], latest_states_[index].velocity_rad_s);
       state_efforts_[index] = to_joint_effort(
         config_.motors[index], latest_states_[index].torque_nm);
+      state_temperatures_[index] = latest_states_[index].temperature_c;
     }
   }
   return hardware_interface::return_type::OK;
@@ -385,7 +413,7 @@ void RobstrideSystem::io_loop()
       std::string error;
       bool success = false;
       if (config_.read_only) {
-        success = bus_->read_encoder(motor.id, state, error);
+        success = bus_->read_status(motor.id, motor.model, state, error);
       } else {
         double command = 0.0;
         {
@@ -403,7 +431,8 @@ void RobstrideSystem::io_loop()
 
       if (!success) {
         disable_all_motors();
-        report_io_error(error);
+        report_io_error(
+          "joint '" + motor.joint_name + "' (motor " + std::to_string(motor.id) + "): " + error);
         stop_io_ = true;
         return;
       }

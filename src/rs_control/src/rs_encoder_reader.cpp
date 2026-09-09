@@ -91,7 +91,7 @@ private:
     for (const auto & motor : config_.motors) {
       MotorState state;
       std::string error;
-      const bool success = bus_->read_encoder(motor.id, state, error);
+      const bool success = bus_->read_status(motor.id, motor.model, state, error);
       auto & diagnostic = diagnostics.status.emplace_back();
       diagnostic.name = "rs_control/" + motor.joint_name;
       diagnostic.hardware_id = config_.bus.interface_name + ":" + std::to_string(motor.id);
@@ -108,11 +108,16 @@ private:
       }
 
       diagnostic.level = diagnostic_msgs::msg::DiagnosticStatus::OK;
-      diagnostic.message = "encoder parameters read OK";
+      diagnostic.message = "operation status read OK";
       add_diagnostic_value(diagnostic, "motor_position_rad", std::to_string(state.position_rad));
       add_diagnostic_value(
         diagnostic, "motor_velocity_rad_s", std::to_string(state.velocity_rad_s));
       add_diagnostic_value(diagnostic, "motor_torque_nm", std::to_string(state.torque_nm));
+      add_diagnostic_value(
+        diagnostic, "motor_temperature_c", std::to_string(state.temperature_c));
+      add_diagnostic_value(diagnostic, "status_flags", std::to_string(state.status_flags));
+      add_diagnostic_value(diagnostic, "fault_code", std::to_string(state.fault_code));
+      add_diagnostic_value(diagnostic, "warning_code", std::to_string(state.warning_code));
 
       joint_state.name.push_back(motor.joint_name);
       joint_state.position.push_back(to_joint_position(motor, state.position_rad));
