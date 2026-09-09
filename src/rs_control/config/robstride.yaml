@@ -14,7 +14,7 @@ read_only: true
 
 motors:
   - joint: joint-1
-    id: 0
+    id: 1
     model: rs-00
     direction: 1
     position_offset: 0.0
@@ -22,7 +22,7 @@ motors:
     kp: 10.0
     kd: 1.0
   - joint: joint-2
-    id: 0
+    id: 2
     model: rs-00
     direction: 1
     position_offset: 0.0
@@ -30,7 +30,7 @@ motors:
     kp: 10.0
     kd: 1.0
   - joint: joint-3
-    id: 0
+    id: 3
     model: rs-00
     direction: 1
     position_offset: 0.0
@@ -38,7 +38,7 @@ motors:
     kp: 10.0
     kd: 1.0
   - joint: joint-4
-    id: 0
+    id: 4
     model: rs-00
     direction: 1
     position_offset: 0.0
@@ -46,7 +46,7 @@ motors:
     kp: 10.0
     kd: 1.0
   - joint: joint-5
-    id: 0
+    id: 5
     model: rs-05
     direction: 1
     position_offset: 0.0
@@ -54,7 +54,7 @@ motors:
     kp: 10.0
     kd: 1.0
   - joint: joint-6
-    id: 0
+    id: 6
     model: rs-05
     direction: 1
     position_offset: 0.0
@@ -62,7 +62,7 @@ motors:
     kp: 10.0
     kd: 1.0
   - joint: joint_right-finger
-    id: 0
+    id: 7
     model: rs-05
     direction: 1
     position_offset: 0.0
