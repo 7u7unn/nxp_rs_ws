@@ -26,8 +26,8 @@ joints:
       upper_stop_rad: 6.38
     urdf:
       type: revolute
-      lower_rad: -3.238
-      upper_rad: 3.142
+      lower_rad: -3.14
+      upper_rad: 3.14
 
   joint-2:
     id: 2

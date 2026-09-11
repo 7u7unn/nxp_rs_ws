@@ -42,13 +42,17 @@ labels with a small, unloaded jog after changing direction calibration.
 The default YAML has `read_only: true`. This is deliberate: it allows encoder
 bringup and state observation while keeping motors disabled.
 
+The hardware bringup launch files in this package use the installed
+`rs_control/config/robstride.yaml` by default. Therefore, the commands below do
+not need a `config_file:=...` argument. Pass `config_file:=/absolute/path/to/robstride.yaml`
+only when using a separate deployment or calibration file.
+
 ## Encoder-only bringup
 
 ```bash
 source /opt/ros/humble/setup.bash
 source install/setup.bash
-ros2 launch rs_control rs_encoder_bringup.launch.py \
-  config_file:=/absolute/path/to/robstride.yaml
+ros2 launch rs_control rs_encoder_bringup.launch.py
 ros2 topic echo /joint_states
 ros2 topic echo /diagnostics
 ```
@@ -66,8 +70,7 @@ torque enabled. Capture the evidence without commanding motion:
 
 ```bash
 candump -tz can0
-ros2 launch rs_control rs_encoder_bringup.launch.py \
-  config_file:=/absolute/path/to/robstride.yaml
+ros2 launch rs_control rs_encoder_bringup.launch.py
 ros2 topic echo /diagnostics
 ```
 
@@ -93,8 +96,7 @@ Start the safe, read-only Python node with the same seven-motor YAML:
 ```bash
 source /opt/ros/humble/setup.bash
 source install/setup.bash
-ros2 launch rs_control rs_python_bringup.launch.py \
-  config_file:=/absolute/path/to/robstride.yaml
+ros2 launch rs_control rs_python_bringup.launch.py
 ```
 
 In read-only mode it sends the reference sample's type-17 parameter-read
@@ -109,7 +111,6 @@ operation control explicitly:
 
 ```bash
 ros2 launch rs_control rs_python_bringup.launch.py \
-  config_file:=/absolute/path/to/robstride.yaml \
   read_only:=false
 ```
 
@@ -169,8 +170,7 @@ interfaces are:
 Start read-only ros2_control state publication with:
 
 ```bash
-ros2 launch rs_control rs_bringup.launch.py \
-  config_file:=/absolute/path/to/robstride.yaml
+ros2 launch rs_control rs_bringup.launch.py
 ```
 
 Only after validating limits, directions, offsets, and the emergency stop
@@ -178,7 +178,6 @@ path, explicitly enable control:
 
 ```bash
 ros2 launch rs_control rs_bringup.launch.py \
-  config_file:=/absolute/path/to/robstride.yaml \
   read_only:=false enable_control:=true
 ```
 
@@ -189,29 +188,57 @@ controller node;
 the SocketCAN protocol and calibration conversions remain isolated in this
 package.
 
-## Standalone single-joint jogger
+## Command-line jogging
 
-The jogger is independent of MoveIt. It waits for a complete `/joint_states`
-message, captures the robot's current pose (so startup does not assume zero),
-and then advances a bounded, jerk-limited profile at a fixed rate. A jog key
-changes a target; it does not immediately replace a trajectory from measured
-feedback. Each affected controller receives a two-point trajectory containing
-the current planned position/velocity and a short future horizon. This keeps
-trajectory replacement continuous and leaves the unrelated controller group
-alone.
+`rs_jog_controller` is an interactive terminal node for the standard
+`ros2_control` bringup. It publishes position trajectories to
+`/arm_controller/joint_trajectory` and `/gripper_controller/joint_trajectory`;
+it does not start the hardware, configure CAN, or disable motors. It is not the
+same command path as `rs_python_bringup.launch.py`, which uses
+`/rs_control/joint_trajectory`.
 
-Stop the encoder reader and any MoveIt launch first. In one terminal, start the
-physical controllers with explicit torque enablement:
+Before jogging:
+
+1. Configure and verify `can0` at the bitrate in `robstride.yaml`.
+2. Stop `rs_encoder_bringup`, `rs_python_bringup`, MoveIt, and any other node
+   that may command the motors.
+3. Make sure the arm is supported, the emergency-stop path is available, and
+   the configured limits and directions have been checked.
+
+### Terminal 1: start the physical controllers
+
+Source ROS 2 and this workspace in the terminal that will own the hardware:
 
 ```bash
 source /opt/ros/humble/setup.bash
 source /home/jundi/nxp_rs_ws/install/setup.bash
+
 ros2 launch rs_control rs_bringup.launch.py \
-  config_file:=/home/jundi/nxp_rs_ws/src/rs_control/config/robstride.yaml \
-  can_interface:=can0 read_only:=false enable_control:=true
+  read_only:=false \
+  enable_control:=true
 ```
 
-In a second interactive terminal, start the jogger:
+`read_only:=false` enables the motor control path during hardware activation.
+`enable_control:=true` starts `arm_controller` and `gripper_controller`; the
+spelling is `enable_control`, not `eneble_control`. If only state observation
+is wanted, use `read_only:=true` and do not start the jogger.
+
+In another terminal, verify that all three required controllers are active:
+
+```bash
+source /opt/ros/humble/setup.bash
+source /home/jundi/nxp_rs_ws/install/setup.bash
+ros2 control list_controllers
+```
+
+You should see `joint_state_broadcaster`, `arm_controller`, and
+`gripper_controller` in the `active` state before starting the jogger.
+
+### Terminal 2: start the jogger
+
+Run this in a real interactive terminal. The node waits for one complete,
+current `/joint_states` snapshot containing `joint-1` through `joint-6` and
+`joint_right-finger`; it sends no motion until that pose has been captured.
 
 ```bash
 source /opt/ros/humble/setup.bash
@@ -219,37 +246,112 @@ source /home/jundi/nxp_rs_ws/install/setup.bash
 ros2 run rs_control rs_jog_controller
 ```
 
-Keys are `1`--`6` to select an arm joint, `7` for the right finger, `+`/`=`
-and `-` to jog, `[`/`]` to halve/double the step, space or `s` to request a
-controlled stop, `h` to recapture feedback, `?` for help, and `q` to request a
-controlled stop before exiting the jogger. Arm steps default to `0.05 rad`;
-finger steps default to `0.001 m`.
-The default profile limits are 0.4 rad/s, 0.8 rad/s², and 4 rad/s³ for arm
-joints, and 0.02 m/s, 0.04 m/s², and 0.2 m/s³ for the finger. A command can
-lead the current planned position by at most 0.25 rad (arm) or 0.01 m
-(finger). These values are launch parameters and should be reduced for a
-loaded or unfamiliar mechanism. The jogger keeps a small margin inside the
-measured hard stops and clamps commands using `config/joints.yaml`.
-
-The arm and gripper controllers set `open_loop_control: true` while jogging.
-This makes a trajectory replacement start from the last commanded state,
-preserving the position error that may be supporting a load. The controllers
-still read hardware state and apply their tracking tolerances. Keep the
-controller manager and CAN loop rates aligned with the jogger's
-`command_rate_hz` (20 Hz by default); raise them together only after measuring
-CAN transaction time and cycle jitter. If `/joint_states` stops arriving for
-0.25 seconds, the jogger requests a controlled stop and waits for feedback to
-become current before accepting further motion.
-
-Check that `joint_state_broadcaster`, `arm_controller`, and
-`gripper_controller` are all active before pressing `+` or `-`:
+The executable has no ordinary argparse options. Set its node parameters with
+ROS 2's `--ros-args -p name:=value` syntax, for example:
 
 ```bash
-ros2 control list_controllers
+ros2 run rs_control rs_jog_controller --ros-args \
+  -p selected_joint:=joint-4 \
+  -p arm_step:=0.02 \
+  -p command_rate_hz:=20.0 \
+  -p max_arm_velocity:=0.2
 ```
 
-The jogger itself does not disable torque when it exits. Press `Ctrl+C` in the
-hardware bringup terminal to stop the hardware and disable all motors.
+### Display the physical robot in RViz
+
+Start RViz in a third terminal while the hardware bringup and jogger are
+running:
+
+```bash
+source /opt/ros/humble/setup.bash
+source /home/jundi/nxp_rs_ws/install/setup.bash
+ros2 launch rs_control rs_jog_rviz.launch.py
+```
+
+This launch file starts only RViz and automatically loads the installed
+`rs_control/rviz/jog.rviz` configuration. The hardware bringup already
+publishes `/robot_description` and the TF tree from the current
+`/joint_states`, so the robot model follows the real arm as it is jogged. No
+additional `robot_state_publisher` or joint-state publisher is needed.
+
+To try a different RViz layout, override the config explicitly:
+
+```bash
+ros2 launch rs_control rs_jog_rviz.launch.py \
+  rviz_config:=/absolute/path/to/custom.rviz
+```
+
+Do not use `nxp_rs_description display.launch.py` for physical jogging: that
+standalone model viewer starts `joint_state_publisher_gui` and its own
+`robot_state_publisher`, which can publish simulated joint states and conflict
+with the hardware bringup. Close RViz at any time without stopping the
+jogger; stop the jogger with `q`, then stop the hardware bringup with `Ctrl+C`.
+
+The equivalent launch wrapper is useful when several parameters must be
+configured. Launch arguments use `name:=value` directly:
+
+```bash
+ros2 launch rs_control rs_jog.launch.py \
+  selected_joint:=joint-4 \
+  arm_step:=0.02 \
+  command_rate_hz:=20.0 \
+  max_arm_velocity:=0.2 \
+  max_arm_acceleration:=0.4 \
+  max_arm_jerk:=2.0 \
+  max_arm_target_lead:=0.10
+```
+
+The launch wrapper uses the installed `config/joints.yaml` by default. Use an
+absolute path when selecting another limits file:
+
+```bash
+ros2 launch rs_control rs_jog.launch.py \
+  limits_file:=/absolute/path/to/joints.yaml
+```
+
+### Jog keys
+
+| Key | Action |
+| --- | --- |
+| `1`--`6` | Select `joint-1` through `joint-6` |
+| `7` | Select `joint_right-finger`; its position and step are in metres |
+| `+` or `=` | Jog the selected joint in the positive direction |
+| `-` or `_` | Jog the selected joint in the negative direction |
+| `[` | Halve both the arm and finger step sizes |
+| `]` | Double both the arm and finger step sizes |
+| `Space` or `s` | Request a controlled stop; torque remains enabled |
+| `h` | Re-capture current feedback and refresh the hold target |
+| `?` or `i` | Print the key help |
+| `q` | Request a controlled stop and exit the jogger |
+
+The default steps are `0.05 rad` for arm joints and `0.001 m` for the finger.
+The default motion limits are:
+
+| Parameter | Arm default | Finger default | Meaning |
+| --- | ---: | ---: | --- |
+| `max_*_velocity` | `0.4 rad/s` | `0.02 m/s` | Maximum profile velocity |
+| `max_*_acceleration` | `0.8 rad/s²` | `0.04 m/s²` | Maximum profile acceleration |
+| `max_*_jerk` | `4 rad/s³` | `0.2 m/s³` | Maximum profile jerk |
+| `max_*_target_lead` | `0.25 rad` | `0.01 m` | Maximum target distance ahead of the planned position |
+
+The jogger clamps every target to the limits file, after applying the default
+`arm_limit_margin:=0.02` rad and `gripper_limit_margin:=0.001` m. Reduce the
+step and motion-limit parameters for a loaded or unfamiliar mechanism. Keep
+`command_rate_hz` aligned with the controller-manager and hardware CAN loop
+rates; increase them together only after measuring CAN transaction time and
+cycle jitter.
+
+Other useful parameters are `selected_joint`, `arm_step`, `gripper_step`,
+`command_duration_s` (default `0.2` s), `feedback_timeout_s` (default `0.25` s),
+`state_topic`, `arm_command_topic`, `gripper_command_topic`, and `limits_file`.
+The `keyboard_poll_hz` parameter defaults to `50.0` and can be set with the
+direct `ros2 run ... --ros-args -p keyboard_poll_hz:=...` form; it is not
+currently exposed as an argument by `rs_jog.launch.py`.
+
+If complete joint feedback stops for `feedback_timeout_s`, the jogger requests
+a controlled stop and rejects further jog commands until feedback is current
+again. Exiting the jogger does not disable torque: press `Ctrl+C` in the
+hardware bringup terminal to stop ros2_control and disable the motors.
 
 ## Build and test
 

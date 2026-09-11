@@ -6,7 +6,7 @@
   <xacro:arg name="bitrate" default="1000000"/>
   <xacro:arg name="host_id" default="255"/>
   <xacro:arg name="response_timeout_ms" default="20"/>
-  <xacro:arg name="poll_rate_hz" default="20.0"/>
+  <xacro:arg name="poll_rate_hz" default="100.0"/>
   <xacro:arg name="read_only" default="true"/>
 
   <xacro:include filename="$(find nxp_rs_description)/urdf/nxp_rs.xacro"/>

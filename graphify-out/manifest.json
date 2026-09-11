@@ -54,21 +54,21 @@
     "semantic_hash": ""
   },
   "src/rs_control/include/rs_control/robstride_bus.hpp": {
-    "mtime": 1788860165.7489874,
-    "seen": 1788860977.683156,
-    "ast_hash": "dfd9a44b7edaef479ddb71db9c17883d",
+    "mtime": 1788950518.7111845,
+    "seen": 1789031298.221973,
+    "ast_hash": "8bce7d24cd7abcc4d1c8dad8175c4933",
     "semantic_hash": ""
   },
   "src/rs_control/include/rs_control/robstride_system.hpp": {
-    "mtime": 1788861178.2889466,
-    "seen": 1788861343.8059945,
-    "ast_hash": "439215a8c9009d5c569a424dbfe14f4f",
+    "mtime": 1788950518.7111845,
+    "seen": 1789031298.221976,
+    "ast_hash": "f314fa621c519b4028e884980efadab9",
     "semantic_hash": ""
   },
   "src/rs_control/launch/rs_bringup.launch.py": {
-    "mtime": 1788860708.256971,
-    "seen": 1788860977.6831589,
-    "ast_hash": "ecfcdcbc36fcb568e3506843e57b4a61",
+    "mtime": 1789039565.4793482,
+    "seen": 1789039731.356878,
+    "ast_hash": "a2f2e71c260a6080134cb35af968f028",
     "semantic_hash": ""
   },
   "src/rs_control/launch/rs_encoder_bringup.launch.py": {
@@ -78,27 +78,27 @@
     "semantic_hash": ""
   },
   "src/rs_control/src/motor_config.cpp": {
-    "mtime": 1788860628.0368366,
-    "seen": 1788860977.683161,
-    "ast_hash": "8c03002f5160e8e662cee78263742031",
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.2220242,
+    "ast_hash": "b07dfabe5533208b3482894cdbe4aa6a",
     "semantic_hash": ""
   },
   "src/rs_control/src/robstride_bus.cpp": {
-    "mtime": 1788860179.4980814,
-    "seen": 1788860977.6831625,
-    "ast_hash": "5c152c83ca4852dda31c4bb72addced5",
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.2220273,
+    "ast_hash": "c6d6b4558927f5b643abdf0abfa3687a",
     "semantic_hash": ""
   },
   "src/rs_control/src/robstride_system.cpp": {
-    "mtime": 1788861178.3689423,
-    "seen": 1788861343.8060122,
-    "ast_hash": "3a7759a5870ba229e17618ed9d6b6a8a",
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.2220304,
+    "ast_hash": "71e5278ea9d4d8cde3ec0945152aff42",
     "semantic_hash": ""
   },
   "src/rs_control/src/rs_encoder_reader.cpp": {
-    "mtime": 1788861508.8839426,
-    "seen": 1788861582.8206024,
-    "ast_hash": "2e59403b2510b39810d906efcf62dc56",
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.2220335,
+    "ast_hash": "60ae868cf307aedc92adb2be77a26cbe",
     "semantic_hash": ""
   },
   "src/rs_control/src/rs_scan.cpp": {
@@ -108,21 +108,21 @@
     "semantic_hash": ""
   },
   "src/rs_control/test/test_hardware_plugin.cpp": {
-    "mtime": 1788860750.0738955,
-    "seen": 1788860977.6831672,
-    "ast_hash": "e38ee0af268dc75708a04f27724bd713",
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.2220404,
+    "ast_hash": "e98a9c775ec044fff621f0d346e50c7f",
     "semantic_hash": ""
   },
   "src/rs_control/test/test_motor_config.cpp": {
-    "mtime": 1788860749.9169033,
-    "seen": 1788860977.6831682,
-    "ast_hash": "94131a1116bea559f0027dffc3871ce0",
+    "mtime": 1788950518.7131844,
+    "seen": 1789031298.2220461,
+    "ast_hash": "38a073888c1d60a6790232abb0fbac6f",
     "semantic_hash": ""
   },
   "src/rs_control/test/test_protocol.cpp": {
-    "mtime": 1788860749.9958994,
-    "seen": 1788860977.6831696,
-    "ast_hash": "9b4f357cb6d2fbca7af74d4c3b766798",
+    "mtime": 1788950518.7131844,
+    "seen": 1789031298.2220495,
+    "ast_hash": "389765eeded9b175cf103f996e3e092c",
     "semantic_hash": ""
   },
   ".claude/skills/graphify/references/add-watch.md": {
@@ -240,27 +240,27 @@
     "semantic_hash": ""
   },
   "src/rs_control/CMakeLists.txt": {
-    "mtime": 1788860779.2164268,
-    "seen": 1788860977.683201,
-    "ast_hash": "b03370927b9b2856a0c37453c0893920",
+    "mtime": 1789026292.270327,
+    "seen": 1789031298.2221944,
+    "ast_hash": "5683751f8141124a288c13db517f6211",
     "semantic_hash": ""
   },
   "src/rs_control/README.md": {
-    "mtime": 1788861178.6069288,
-    "seen": 1788861343.8061192,
-    "ast_hash": "b116a68cb3272f15a777ad1d6bb902cc",
+    "mtime": 1789026292.4353166,
+    "seen": 1789031298.2221975,
+    "ast_hash": "e25c44fdee2b58133b2acb53502f3c6c",
     "semantic_hash": ""
   },
   "src/rs_control/config/robstride.yaml": {
-    "mtime": 1788860456.593478,
-    "seen": 1788860977.683204,
-    "ast_hash": "25f910c15a1e04a1972da58a0fbd54ff",
+    "mtime": 1789039565.2223632,
+    "seen": 1789039731.3569937,
+    "ast_hash": "9d5addf878fb8e0fd88f3f5d715aa132",
     "semantic_hash": ""
   },
   "src/rs_control/config/ros2_controllers.yaml": {
-    "mtime": 1788860456.6714747,
-    "seen": 1788860977.6832056,
-    "ast_hash": "f5003692e15ccfa926167ffbd6565e6c",
+    "mtime": 1789039565.3073583,
+    "seen": 1789039731.3569953,
+    "ast_hash": "14ffb36652c167602798327afad60a8b",
     "semantic_hash": ""
   },
   "src/nxp_rs_moveit_config/launch/demo.launch.py": {
@@ -270,21 +270,21 @@
     "semantic_hash": ""
   },
   "src/nxp_rs_moveit_config/CMakeLists.txt": {
-    "mtime": 1788863931.037415,
-    "seen": 1788863939.3514538,
-    "ast_hash": "e1261fc5e276006ffeb2ca7785bfe48e",
+    "mtime": 1789034869.7608466,
+    "seen": 1789034993.0731883,
+    "ast_hash": "d485f82106955633da58d3d11c3dec64",
     "semantic_hash": ""
   },
   "src/nxp_rs_moveit_config/README.md": {
-    "mtime": 1788862759.8432505,
-    "seen": 1788862801.891947,
-    "ast_hash": "c534217798005735af375b73cd991e89",
+    "mtime": 1789039862.2027664,
+    "seen": 1789040037.282468,
+    "ast_hash": "abba2ffdaa950c315312d79f6e97c928",
     "semantic_hash": ""
   },
   "src/nxp_rs_moveit_config/config/joint_limits.yaml": {
-    "mtime": 1788862692.5808063,
-    "seen": 1788862801.8919482,
-    "ast_hash": "a0c8127e9c166bdfb84b254cf96e7b72",
+    "mtime": 1788950518.7101846,
+    "seen": 1789031298.2221751,
+    "ast_hash": "98395fd796df624acce96c0572f11ebf",
     "semantic_hash": ""
   },
   "src/nxp_rs_moveit_config/config/kinematics.yaml": {
@@ -294,9 +294,9 @@
     "semantic_hash": ""
   },
   "src/nxp_rs_moveit_config/config/moveit_controllers.yaml": {
-    "mtime": 1788862759.5252721,
-    "seen": 1788862801.8919506,
-    "ast_hash": "c6b6a538964ba1a44bf5cc0a5b2f27f1",
+    "mtime": 1789038147.3899975,
+    "seen": 1789038202.4915397,
+    "ast_hash": "ada29bd60ade47cab9d08d8d067a55fa",
     "semantic_hash": ""
   },
   "src/nxp_rs_moveit_config/config/ompl_planning.yaml": {
@@ -309,6 +309,204 @@
     "mtime": 1788862759.6072664,
     "seen": 1788862801.8919532,
     "ast_hash": "f60ad9b0cc321f49dcf5d89198a6f64f",
+    "semantic_hash": ""
+  },
+  "src/nxp_rs_moveit_config/launch/hardware_moveit.launch.py": {
+    "mtime": 1789039565.5643432,
+    "seen": 1789039731.3568678,
+    "ast_hash": "e715224279bff6dbbfb32ac6e7bcba3f",
+    "semantic_hash": ""
+  },
+  "src/rs_control/launch/rs_jog.launch.py": {
+    "mtime": 1788950518.7111845,
+    "seen": 1789031298.2219863,
+    "ast_hash": "177d21992f7c7fefc79aafa6c752d349",
+    "semantic_hash": ""
+  },
+  "src/rs_control/launch/rs_jog_rviz.launch.py": {
+    "mtime": 1789026292.5173113,
+    "seen": 1789031298.2219894,
+    "ast_hash": "502680d294a9f30994c16ab96489f55c",
+    "semantic_hash": ""
+  },
+  "src/rs_control/launch/rs_python_bringup.launch.py": {
+    "mtime": 1789039877.974824,
+    "seen": 1789040037.2823365,
+    "ast_hash": "b12d4e9336a0488daaefcc92d3366ff6",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_control_py/__init__.py": {
+    "mtime": 1788950518.7111845,
+    "seen": 1789031298.221995,
+    "ast_hash": "1268cc7856e18dacf49ee283cf231f88",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_control_py/bus.py": {
+    "mtime": 1788950518.7111845,
+    "seen": 1789031298.221998,
+    "ast_hash": "bb4cc87c3b7fe7a1bb422a028a506159",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_control_py/config.py": {
+    "mtime": 1789039878.0578191,
+    "seen": 1789040037.2823474,
+    "ast_hash": "9ff3cee79219154dc69ed9ef2a7f8a9e",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_control_py/jog.py": {
+    "mtime": 1788950518.7111845,
+    "seen": 1789031298.2220037,
+    "ast_hash": "f640fd9131dc3347d6d08a556c98c67b",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_control_py/node.py": {
+    "mtime": 1788950518.7111845,
+    "seen": 1789031298.2220066,
+    "ast_hash": "a66bba68970145bbac59c48b6f0a675e",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_control_py/protocol.py": {
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.2220094,
+    "ast_hash": "15d7951f8c760f2b945966a7468fa8c2",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_jog_controller.py": {
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.2220125,
+    "ast_hash": "0f7796c39040776bf38ccd92a2a69979",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_python_control.py": {
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.2220151,
+    "ast_hash": "03c05e222c3a5f05cb19ec4bde932d32",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_python_scan.py": {
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.222018,
+    "ast_hash": "093a494a4df1042f24a8c3ef620ac45e",
+    "semantic_hash": ""
+  },
+  "src/rs_control/python/rs_python_set_id.py": {
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.222021,
+    "ast_hash": "07c631f361c79c2e5ab9a84201d1e2c4",
+    "semantic_hash": ""
+  },
+  "src/rs_control/test/test_jog.py": {
+    "mtime": 1788950518.7121844,
+    "seen": 1789031298.222043,
+    "ast_hash": "a142ae7e8a628e15d5c4c078c34d08fb",
+    "semantic_hash": ""
+  },
+  "src/rs_control/test/test_python_bus.py": {
+    "mtime": 1788950518.7131844,
+    "seen": 1789031298.2220523,
+    "ast_hash": "df674b04f6ec0bda343f357e204b44f0",
+    "semantic_hash": ""
+  },
+  "src/rs_control/test/test_python_protocol.py": {
+    "mtime": 1788950518.7131844,
+    "seen": 1789031298.2220552,
+    "ast_hash": "6a18073fe526ac4f4920362df0131a78",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_072103_568515db_diagnose_the_rs_control_bringup_failure_and_the_co.md": {
+    "mtime": 1789024863.8916101,
+    "seen": 1789031298.2221003,
+    "ast_hash": "f3a517365acb58407935f91320cedf56",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_072619_bd80006f_why_did_can0_need_setup_again__and_can_udev_make_t.md": {
+    "mtime": 1789025179.7923834,
+    "seen": 1789031298.2221034,
+    "ast_hash": "2719be0bc5a1c867dc26469ae85f649c",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_073552_751acc05_rewrite_rs_control_readme_to_clearly_document_the.md": {
+    "mtime": 1789025752.3947923,
+    "seen": 1789031298.2221065,
+    "ast_hash": "0e2124ce7b1b3dbefab23c8183624578",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_074115_36824bee_hilangkan_kebutuhan_menulis_path_robstride_yaml_pa.md": {
+    "mtime": 1789026075.5731587,
+    "seen": 1789031298.2221096,
+    "ast_hash": "ca9cc2b6964fa04e04726c1fdf7349c9",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_074739_816ae070_add_an_rviz_display_workflow_and_configuration_for.md": {
+    "mtime": 1789026459.535144,
+    "seen": 1789031298.2221124,
+    "ast_hash": "38e4c9c4240b38730174f73a75a9dbae",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_084450_670b8e65_audit_all_requirements_and_setup_before_final_move.md": {
+    "mtime": 1789029890.6666055,
+    "seen": 1789031298.2221153,
+    "ast_hash": "f50088a265c8411811c91aae91a7ca91",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_085717_bfa00802_diagnose_failed_loading_joint_state_broadcaster_wh.md": {
+    "mtime": 1789030637.4305558,
+    "seen": 1789031298.2221184,
+    "ast_hash": "357809c675f48712f7960e6133b861d9",
+    "semantic_hash": ""
+  },
+  "src/rs_control/config/joints.yaml": {
+    "mtime": 1788950518.7101846,
+    "seen": 1789031298.2222006,
+    "ast_hash": "a574ace8a9f064711618319203d5c48b",
+    "semantic_hash": ""
+  },
+  "src/rs_control/docs/jog_investigation_2026-09-09.md": {
+    "mtime": 1788950518.7111845,
+    "seen": 1789031298.2222097,
+    "ast_hash": "69a90993952b5b6be2e4b020712cbb89",
+    "semantic_hash": ""
+  },
+  "src/nxp_rs_moveit_config/test/test_collision_geometry.cpp": {
+    "mtime": 1789036446.5383978,
+    "seen": 1789036510.82094,
+    "ast_hash": "b850d842de6707f309290ec9499eb2d4",
+    "semantic_hash": ""
+  },
+  "src/nxp_rs_moveit_config/test/test_hardware_execution.cpp": {
+    "mtime": 1789034616.9918656,
+    "seen": 1789034993.0729508,
+    "ast_hash": "32a052469455b160854c44c371aa1197",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_094024_8bf86211_diagnose_moveit_plan_and_execute_failure_from_base.md": {
+    "mtime": 1789033224.0175786,
+    "seen": 1789034993.0731335,
+    "ast_hash": "4de660878a3b644cd127bf6282a93abc",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_094423_ec191b83_diagnose_moveit_execute_rejection__start_point_dev.md": {
+    "mtime": 1789033463.1443808,
+    "seen": 1789034993.0731363,
+    "ast_hash": "02adc6ba185943ec56e197c743551586",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260910_095416_3bf3b1c3_investigate_why_first_moveit_trajectory_succeeds_b.md": {
+    "mtime": 1789034056.1330533,
+    "seen": 1789034993.0731397,
+    "ast_hash": "7de120117afeec0d98eb959dd9bb8d3d",
+    "semantic_hash": ""
+  },
+  "src/nxp_rs_moveit_config/config/hardware_execution.yaml": {
+    "mtime": 1789034488.5377166,
+    "seen": 1789034993.0731943,
+    "ast_hash": "6a6508f4e1d27bd67bbd12d1a5fa756b",
+    "semantic_hash": ""
+  },
+  "src/nxp_rs_moveit_config/docs/execution_investigation_2026-09-10.md": {
+    "mtime": 1789035277.402711,
+    "seen": 1789035310.4900358,
+    "ast_hash": "4102160a8963cd7c1acc421cd3c147ec",
     "semantic_hash": ""
   }
 }

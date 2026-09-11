@@ -12,7 +12,10 @@ can_interface: can0
 bitrate: 1000000
 host_id: 255  # primary/host ID; must differ from every motor ID
 response_timeout_ms: 20
-poll_rate_hz: 20.0
+# The reference RobStride driver sends each actuator at a 10 ms interval.
+# This system serializes all seven request/response transactions, so 100 Hz is
+# the matching starting point for the aggregate I/O loop.
+poll_rate_hz: 100.0
 read_only: true
 
 motors:
@@ -24,8 +27,9 @@ motors:
     position_scale: 1.0
     motor_position_min: 0.0
     motor_position_max: 6.38
-    kp: 10.0
-    kd: 1.0
+    # Reference operation-mode gains: effort_kp=480.00ort_kd=5.
+    kp: 480.00
+    kd: 5.0
   - joint: joint-2
     id: 2
     model: rs-00
@@ -34,8 +38,8 @@ motors:
     position_scale: 1.0
     motor_position_min: 3.06
     motor_position_max: 6.8
-    kp: 10.0
-    kd: 1.0
+    kp: 480.00
+    kd: 5.0
   - joint: joint-3
     id: 3
     model: rs-00
@@ -44,8 +48,8 @@ motors:
     position_scale: 1.0
     motor_position_min: 2.82
     motor_position_max: 9.05
-    kp: 10.0
-    kd: 1.0
+    kp: 480.00
+    kd: 5.0
   - joint: joint-4
     id: 4
     model: rs-00
@@ -54,8 +58,8 @@ motors:
     position_scale: 1.0
     motor_position_min: -2.28
     motor_position_max: 2.086
-    kp: 10.0
-    kd: 1.0
+    kp: 480.00
+    kd: 5.0
   - joint: joint-5
     id: 5
     model: rs-05
@@ -64,8 +68,8 @@ motors:
     position_scale: 1.0
     motor_position_min: -2.89
     motor_position_max: 1.038
-    kp: 10.0
-    kd: 1.0
+    kp: 400
+    kd: 5.0
   - joint: joint-6
     id: 6
     model: rs-05
@@ -74,8 +78,8 @@ motors:
     position_scale: 1.0
     motor_position_min: -2.22
     motor_position_max: 4.169
-    kp: 10.0
-    kd: 1.0
+    kp: 480.00
+    kd: 5.0
   - joint: joint_right-finger
     id: 7
     model: rs-05
@@ -88,5 +92,5 @@ motors:
     position_scale: 0.040543259557  # metres per encoder radian
     motor_position_min: -0.04  # closed encoder stop [rad]
     motor_position_max: 0.954  # open encoder stop [rad]
-    kp: 10.0
-    kd: 1.0
+    kp: 480.00
+    kd: 5.0

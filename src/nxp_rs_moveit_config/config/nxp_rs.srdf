@@ -2,9 +2,9 @@
 <robot name="nxp_rs">
   <virtual_joint name="virtual_joint" type="fixed" parent_frame="world" child_link="base_link"/>
 
-  <!-- Six revolute joints from the base to the palm form the manipulator. -->
+  <!-- Six revolute joints from the base to the grasp frame form the arm. -->
   <group name="arm">
-    <chain base_link="base_link" tip_link="palm"/>
+    <chain base_link="base_link" tip_link="grasp_frame"/>
   </group>
 
   <!-- The right finger is the one simulated actuator; the left finger mimics it. -->
@@ -12,7 +12,7 @@
     <joint name="joint_right-finger"/>
   </group>
   <passive_joint name="joint_left-finger"/>
-  <end_effector name="gripper_eef" parent_link="palm" group="gripper" parent_group="arm"/>
+  <end_effector name="gripper_eef" parent_link="grasp_frame" group="gripper" parent_group="arm"/>
 
   <group_state name="home" group="arm">
     <joint name="joint-1" value="0"/>

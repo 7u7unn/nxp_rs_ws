@@ -15,7 +15,7 @@
         <child link="link_1"/>
         <origin xyz="0.00 0.00 0.06" rpy="0.00 0.00 0.00"/>
         <axis xyz="0 0 1"/>
-        <limit lower="-3.238" upper="3.142" effort="1.0" velocity="1.0"/>
+        <limit lower="-3.14" upper="3.14" effort="1.0" velocity="1.0"/>
     </joint>
 
     <link name="link_1">
@@ -111,6 +111,14 @@
         </visual>
 
     </link>
+
+    <!-- Fixed grasp/TCP frame centered between the mirrored fingers. -->
+    <link name="grasp_frame"/>
+    <joint name="grasp_frame_joint" type="fixed">
+        <parent link="palm"/>
+        <child link="grasp_frame"/>
+        <origin xyz="0.002675 0.000000 0.103650" rpy="0.00 0.00 0.00"/>
+    </joint>
 
     <link name="right-finger">
     <visual>

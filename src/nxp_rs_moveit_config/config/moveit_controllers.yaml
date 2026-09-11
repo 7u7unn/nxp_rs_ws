@@ -1,10 +1,5 @@
-# MoveIt uses this file to map planning groups to simulated trajectory actions.
-trajectory_execution:
-  allowed_execution_duration_scaling: 1.2
-  allowed_goal_duration_margin: 0.5
-  allowed_start_tolerance: 0.01
-  execution_duration_monitoring: true
-
+# MoveIt maps planning groups to trajectory actions in both launch modes.
+# Keep execution timing at MoveIt's defaults, as in the reference package.
 moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
 
 moveit_simple_controller_manager:

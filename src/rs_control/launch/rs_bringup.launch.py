@@ -52,7 +52,9 @@ def generate_launch_description():
         DeclareLaunchArgument('bitrate', default_value='1000000'),
         DeclareLaunchArgument('host_id', default_value='255'),
         DeclareLaunchArgument('response_timeout_ms', default_value='20'),
-        DeclareLaunchArgument('poll_rate_hz', default_value='20.0'),
+        DeclareLaunchArgument(
+            'poll_rate_hz', default_value='100.0',
+            description='Aggregate seven-motor RobStride I/O rate.'),
         DeclareLaunchArgument(
             'read_only', default_value='true',
             description='Keep motors disabled and ignore position commands.'),

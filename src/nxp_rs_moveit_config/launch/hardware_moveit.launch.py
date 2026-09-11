@@ -42,7 +42,11 @@ def generate_launch_description():
     response_timeout_ms = DeclareLaunchArgument(
         "response_timeout_ms", default_value="20"
     )
-    poll_rate_hz = DeclareLaunchArgument("poll_rate_hz", default_value="20.0")
+    poll_rate_hz = DeclareLaunchArgument(
+        "poll_rate_hz",
+        default_value="100.0",
+        description="Aggregate seven-motor RobStride I/O rate.",
+    )
     read_only = DeclareLaunchArgument(
         "read_only",
         default_value="true",
@@ -103,6 +107,11 @@ def generate_launch_description():
     ros2_control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
+        # Match the reference project's real-hardware launch: the controller
+        # manager receives only the controller definitions.  The optional
+        # hardware_execution.yaml overlay is intentionally not loaded here;
+        # its strict position tolerances abort this position-only driver before
+        # it can be compared with the reference behavior.
         parameters=[moveit_config.robot_description, controller_config],
         output="screen",
     )
@@ -145,6 +154,14 @@ def generate_launch_description():
             {"use_sim_time": LaunchConfiguration("use_sim_time")},
         ],
         arguments=["--ros-args", "--log-level", "info"],
+    )
+
+    floor_scene = Node(
+        package="nxp_rs_moveit_config",
+        executable="floor_scene",
+        name="floor_scene",
+        output="screen",
+        parameters=[os.path.join(moveit_share, "config", "floor_scene.yaml")],
     )
 
     rviz_node = Node(
@@ -191,6 +208,7 @@ def generate_launch_description():
             arm_controller,
             gripper_controller,
             move_group,
+            floor_scene,
             rviz_node,
         ]
     )

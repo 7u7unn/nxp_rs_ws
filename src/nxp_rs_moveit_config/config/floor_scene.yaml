@@ -1,0 +1,9 @@
+floor_scene:
+  ros__parameters:
+    floor_id: nxp_rs_floor
+    floor_frame: world
+    base_link: base_link
+    floor_size_x: 10.0
+    floor_size_y: 10.0
+    floor_thickness: 0.02
+    floor_top_z: 0.0

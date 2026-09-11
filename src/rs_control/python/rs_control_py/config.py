@@ -20,8 +20,8 @@ class MotorConfig:
     position_scale: float = 1.0
     motor_position_min: float | None = None
     motor_position_max: float | None = None
-    kp: float = 10.0
-    kd: float = 1.0
+    kp: float = 500.0
+    kd: float = 5.0
 
     @property
     def has_position_limits(self) -> bool:
@@ -63,7 +63,7 @@ class RobotConfig:
     bitrate: int = 1_000_000
     host_id: int = 0xFF
     response_timeout_ms: int = 20
-    poll_rate_hz: float = 20.0
+    poll_rate_hz: float = 100.0
     read_only: bool = True
     motors: list[MotorConfig] = field(default_factory=list)
 
@@ -125,7 +125,7 @@ def load_robot_config(path: str | Path) -> RobotConfig:
         bitrate=int(raw.get("bitrate", 1_000_000)),
         host_id=int(raw.get("host_id", 0xFF)),
         response_timeout_ms=int(raw.get("response_timeout_ms", 20)),
-        poll_rate_hz=_as_finite(raw.get("poll_rate_hz", 20.0), "poll_rate_hz"),
+        poll_rate_hz=_as_finite(raw.get("poll_rate_hz", 100.0), "poll_rate_hz"),
         read_only=_as_bool(raw.get("read_only", True), "read_only"),
     )
 
@@ -156,8 +156,8 @@ def load_robot_config(path: str | Path) -> RobotConfig:
         if position_min is not None:
             position_min = _as_finite(position_min, f"{context}.motor_position_min")
             position_max = _as_finite(position_max, f"{context}.motor_position_max")
-        kp = _as_finite(raw_motor.get("kp", 10.0), f"{context}.kp")
-        kd = _as_finite(raw_motor.get("kd", 1.0), f"{context}.kd")
+        kp = _as_finite(raw_motor.get("kp", 500.0), f"{context}.kp")
+        kd = _as_finite(raw_motor.get("kd", 5.0), f"{context}.kd")
         result.motors.append(
             MotorConfig(
                 joint_name=joint_name,

@@ -1,0 +1,254 @@
+{
+  "generated_at": "2026-09-11T10:17:05.699649+00:00",
+  "nodes": {
+    "src_nxp_rs_moveit_config_readme": {
+      "code_fingerprint": "c4fe28194d43739aebec6f11128193744834a6fdb5b5ad1d0112ce2dce595d10",
+      "label": "nxp_rs_moveit_config/README.md",
+      "last": "2026-09-10T07:41:15.573920+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T07:41:15.573920+00:00",
+          "outcome": "useful",
+          "q": "Hilangkan kebutuhan menulis path robstride.yaml pada command launch bringup dan MoveIt"
+        }
+      ],
+      "score": 0.974719739,
+      "source_file": "src/nxp_rs_moveit_config/README.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_nxp_rs_moveit_config_readme_move_the_physical_robot_from_moveit": {
+      "code_fingerprint": "c4fe28194d43739aebec6f11128193744834a6fdb5b5ad1d0112ce2dce595d10",
+      "label": "Move the physical robot from MoveIt",
+      "last": "2026-09-10T09:54:16.133665+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T09:54:16.133665+00:00",
+          "outcome": "useful",
+          "q": "Investigate why first MoveIt trajectory succeeds but the next plan starts in collision"
+        },
+        {
+          "date": "2026-09-10T09:40:24.018479+00:00",
+          "outcome": "useful",
+          "q": "Diagnose MoveIt plan-and-execute failure from base_link/right-finger collision"
+        }
+      ],
+      "score": 1.953386969,
+      "source_file": "src/nxp_rs_moveit_config/README.md",
+      "status": "preferred",
+      "uses": 2
+    },
+    "src_rs_control_include_rs_control_robstride_bus_busconfig": {
+      "code_fingerprint": "dfcfc114e33db4297600c80c138b61d2487107150546b9ddc619c35b9a7de75e",
+      "label": "BusConfig",
+      "last": "2026-09-10T07:26:19.794057+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T07:26:19.794057+00:00",
+          "outcome": "useful",
+          "q": "Why did can0 need setup again, and can udev make the SocketCAN setup persistent?"
+        }
+      ],
+      "score": 0.974486275,
+      "source_file": "src/rs_control/include/rs_control/robstride_bus.hpp",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_rs_control_launch_rs_bringup_launch": {
+      "code_fingerprint": "7fd7e11c2164f2ff37fdcedf81c4d0f23dd3a56e794bfb4b1944098ac6d7f64b",
+      "label": "rs_bringup.launch.py",
+      "last": "2026-09-10T07:41:15.573920+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T07:41:15.573920+00:00",
+          "outcome": "useful",
+          "q": "Hilangkan kebutuhan menulis path robstride.yaml pada command launch bringup dan MoveIt"
+        },
+        {
+          "date": "2026-09-10T07:35:52.395349+00:00",
+          "outcome": "useful",
+          "q": "Rewrite rs_control README to clearly document the command line for jogging"
+        }
+      ],
+      "score": 1.949355242,
+      "source_file": "src/rs_control/launch/rs_bringup.launch.py",
+      "status": "preferred",
+      "uses": 2
+    },
+    "src_rs_control_launch_rs_jog_launch": {
+      "code_fingerprint": "7520cbebc86505c20abf26bdff6059bb5dffe90766393ba55cac08e74d0a4f73",
+      "label": "rs_jog.launch.py",
+      "last": "2026-09-10T07:35:52.395349+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T07:35:52.395349+00:00",
+          "outcome": "useful",
+          "q": "Rewrite rs_control README to clearly document the command line for jogging"
+        }
+      ],
+      "score": 0.974635503,
+      "source_file": "src/rs_control/launch/rs_jog.launch.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_rs_control_readme": {
+      "code_fingerprint": "29337ae7b204a52f2dd6973a6b1faa64d622131df05bbee75e8ea4af08655b66",
+      "label": "rs_control/README.md",
+      "last": "2026-09-10T07:41:15.573920+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T07:41:15.573920+00:00",
+          "outcome": "useful",
+          "q": "Hilangkan kebutuhan menulis path robstride.yaml pada command launch bringup dan MoveIt"
+        },
+        {
+          "date": "2026-09-10T07:35:52.395349+00:00",
+          "outcome": "useful",
+          "q": "Rewrite rs_control README to clearly document the command line for jogging"
+        },
+        {
+          "date": "2026-09-10T07:26:19.794057+00:00",
+          "outcome": "useful",
+          "q": "Why did can0 need setup again, and can udev make the SocketCAN setup persistent?"
+        },
+        {
+          "date": "2026-09-10T07:21:03.892676+00:00",
+          "outcome": "useful",
+          "q": "Diagnose the rs_control bringup failure and the controller argument spelling"
+        }
+      ],
+      "score": 3.898245473,
+      "source_file": "src/rs_control/README.md",
+      "status": "preferred",
+      "uses": 4
+    },
+    "src_rs_control_readme_configure_the_physical_robot": {
+      "code_fingerprint": "29337ae7b204a52f2dd6973a6b1faa64d622131df05bbee75e8ea4af08655b66",
+      "label": "Configure the physical robot",
+      "last": "2026-09-10T07:26:19.794057+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T07:26:19.794057+00:00",
+          "outcome": "useful",
+          "q": "Why did can0 need setup again, and can udev make the SocketCAN setup persistent?"
+        }
+      ],
+      "score": 0.974486275,
+      "source_file": "src/rs_control/README.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_rs_control_readme_encoder_only_bringup": {
+      "code_fingerprint": "29337ae7b204a52f2dd6973a6b1faa64d622131df05bbee75e8ea4af08655b66",
+      "label": "Encoder-only bringup",
+      "last": "2026-09-10T07:41:15.573920+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T07:41:15.573920+00:00",
+          "outcome": "useful",
+          "q": "Hilangkan kebutuhan menulis path robstride.yaml pada command launch bringup dan MoveIt"
+        }
+      ],
+      "score": 0.974719739,
+      "source_file": "src/rs_control/README.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_rs_control_src_robstride_bus_robstridebus_receive_status": {
+      "code_fingerprint": "56437ea4cd911ce82283551313529d59bcd859be664e06d6e8ccfc1e1fc233d6",
+      "label": "RobstrideBus::receive_status()",
+      "last": "2026-09-10T07:21:03.892676+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T07:21:03.892676+00:00",
+          "outcome": "useful",
+          "q": "Diagnose the rs_control bringup failure and the controller argument spelling"
+        }
+      ],
+      "score": 0.974403956,
+      "source_file": "src/rs_control/src/robstride_bus.cpp",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_rs_control_src_robstride_system_robstridesystem_export_command_interfaces": {
+      "code_fingerprint": "5d14032a51b03ff6290cda11dc669f5dee55992a26cf2886adb8a92d073a07ed",
+      "label": "RobstrideSystem::export_command_interfaces()",
+      "last": "2026-09-11T06:14:48.291174+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-11T06:14:48.291174+00:00",
+          "outcome": "useful",
+          "q": "When running MoveIt on hardware, the end effector is shaky despite reaching the goal. Could Kp/Kd cause it?"
+        }
+      ],
+      "score": 0.996119984,
+      "source_file": "src/rs_control/src/robstride_system.cpp",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_rs_control_src_robstride_system_robstridesystem_io_loop": {
+      "code_fingerprint": "5d14032a51b03ff6290cda11dc669f5dee55992a26cf2886adb8a92d073a07ed",
+      "label": "RobstrideSystem::io_loop()",
+      "last": "2026-09-11T06:14:48.291174+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-11T06:14:48.291174+00:00",
+          "outcome": "useful",
+          "q": "When running MoveIt on hardware, the end effector is shaky despite reaching the goal. Could Kp/Kd cause it?"
+        },
+        {
+          "date": "2026-09-10T09:54:16.133665+00:00",
+          "outcome": "useful",
+          "q": "Investigate why first MoveIt trajectory succeeds but the next plan starts in collision"
+        },
+        {
+          "date": "2026-09-10T09:44:23.145573+00:00",
+          "outcome": "useful",
+          "q": "Diagnose MoveIt execute rejection: start point deviates from current robot state"
+        }
+      ],
+      "score": 2.949569404,
+      "source_file": "src/rs_control/src/robstride_system.cpp",
+      "status": "preferred",
+      "uses": 3
+    },
+    "src_rs_control_src_robstride_system_robstridesystem_on_activate": {
+      "code_fingerprint": "5d14032a51b03ff6290cda11dc669f5dee55992a26cf2886adb8a92d073a07ed",
+      "label": "RobstrideSystem::on_activate()",
+      "last": "2026-09-10T08:57:17.431244+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T08:57:17.431244+00:00",
+          "outcome": "useful",
+          "q": "Diagnose failed loading joint_state_broadcaster when launching hardware MoveIt read_only"
+        },
+        {
+          "date": "2026-09-10T07:21:03.892676+00:00",
+          "outcome": "useful",
+          "q": "Diagnose the rs_control bringup failure and the controller argument spelling"
+        }
+      ],
+      "score": 1.950313502,
+      "source_file": "src/rs_control/src/robstride_system.cpp",
+      "status": "preferred",
+      "uses": 2
+    },
+    "src_rs_control_src_robstride_system_robstridesystem_read_all_initial_states": {
+      "code_fingerprint": "5d14032a51b03ff6290cda11dc669f5dee55992a26cf2886adb8a92d073a07ed",
+      "label": "RobstrideSystem::read_all_initial_states()",
+      "last": "2026-09-10T09:44:23.145573+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-10T09:44:23.145573+00:00",
+          "outcome": "useful",
+          "q": "Diagnose MoveIt execute rejection: start point deviates from current robot state"
+        }
+      ],
+      "score": 0.976647268,
+      "source_file": "src/rs_control/src/robstride_system.cpp",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}

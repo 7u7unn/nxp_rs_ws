@@ -1,6 +1,7 @@
 controller_manager:
   ros__parameters:
-    update_rate: 20
+    # Keep the trajectory/reference loop aligned with the hardware I/O loop.
+    update_rate: 100
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -25,13 +26,16 @@ arm_controller:
     state_interfaces:
       - position
       - velocity
-    state_publish_rate: 20.0
+    state_publish_rate: 100.0
     action_monitor_rate: 20.0
     allow_partial_joints_goal: false
     # Preserve the last commanded state when the jogger replaces a trajectory.
     # This prevents a loaded joint's holding position error from being reset to
     # measured feedback at every key press.
     open_loop_control: true
+    # Match the reference hardware controller and allow a smooth hand-off when
+    # a new plan starts with the arm still settling.
+    allow_nonzero_velocity_at_trajectory_start: true
     interpolation_method: splines
 
 gripper_controller:
@@ -43,7 +47,7 @@ gripper_controller:
     state_interfaces:
       - position
       - velocity
-    state_publish_rate: 20.0
+    state_publish_rate: 100.0
     action_monitor_rate: 20.0
     allow_partial_joints_goal: false
     open_loop_control: true

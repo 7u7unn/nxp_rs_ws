@@ -1,0 +1,28 @@
+# Overlay on rs_control/config/ros2_controllers.yaml for physical MoveIt only.
+# Zero JTC position tolerance DISABLES the check; it does not mean exact tracking.
+# Commissioning limits, not a guarantee of collision clearance or holding torque.
+arm_controller:
+  ros__parameters:
+    # Humble 2.53.1 still checks measured position with this option enabled.
+    # Preserve the existing holding reference at trajectory replacement.
+    open_loop_control: true
+    allow_nonzero_velocity_at_trajectory_end: false
+    constraints:
+      goal_time: 1.0
+      stopped_velocity_tolerance: 0.01
+      joint-1: {trajectory: 0.03, goal: 0.01}
+      joint-2: {trajectory: 0.03, goal: 0.01}
+      joint-3: {trajectory: 0.03, goal: 0.01}
+      joint-4: {trajectory: 0.03, goal: 0.01}
+      joint-5: {trajectory: 0.03, goal: 0.01}
+      joint-6: {trajectory: 0.03, goal: 0.01}
+
+gripper_controller:
+  ros__parameters:
+    open_loop_control: true
+    allow_nonzero_velocity_at_trajectory_end: false
+    constraints:
+      goal_time: 1.0
+      stopped_velocity_tolerance: 0.001
+      # Finger position is in metres, not motor radians.
+      joint_right-finger: {trajectory: 0.002, goal: 0.001}

@@ -51,6 +51,14 @@ def generate_launch_description():
         arguments=["--ros-args", "--log-level", "info"],
     )
 
+    floor_scene = Node(
+        package="nxp_rs_moveit_config",
+        executable="floor_scene",
+        name="floor_scene",
+        output="screen",
+        parameters=[os.path.join(package_share, "config", "floor_scene.yaml")],
+    )
+
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
@@ -132,6 +140,7 @@ def generate_launch_description():
             static_tf,
             robot_state_publisher,
             move_group,
+            floor_scene,
             ros2_control_node,
             joint_state_broadcaster,
             arm_controller,
