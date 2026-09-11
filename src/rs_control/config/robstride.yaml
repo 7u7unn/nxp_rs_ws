@@ -5,8 +5,8 @@
 # Encoder stop measurements and derived URDF limits are recorded in
 # joints.yaml. The arm direction signs below are calibrated against the
 # positive axes in the URDF. Motor 7 is rotational at the encoder, but its
-# ROS/URDF finger position is the measured finger travel in metres: 0.0 m open
-# and 0.0403 m closed.
+# ROS/URDF finger position is zero at the measured physical open endpoint;
+# the closed endpoint is 0.0837560613 m from that zero.
 
 can_interface: can0
 bitrate: 1000000
@@ -74,7 +74,9 @@ motors:
     id: 6
     model: rs-05
     direction: -1
-    position_offset: 0.929
+    # Physical reference pose was ROS q=0.767354 rad with the old offset;
+    # raw 0.161645692 rad is now the ROS/RViz q=0 reference.
+    position_offset: 0.161645692
     position_scale: 1.0
     motor_position_min: -2.22
     motor_position_max: 4.169
@@ -84,13 +86,11 @@ motors:
     id: 7
     model: rs-05
     direction: -1
-    # Based on the reported physical/RViz inversion, the finger encoder
-    # endpoints are mapped opposite to the original calibration: raw 0.954 rad
-    # is treated as open and -0.04 rad as closed. Verify both endpoints with a
-    # small, unloaded jog before relying on this mapping.
-    position_offset: 0.954  # open encoder position; ROS joint position is 0 m
+    # The calibrated endpoint assignment is raw 2.02584429 rad = open/ROS
+    # zero and raw -0.04 rad = closed/ROS 0.0837560613 m.
+    position_offset: 2.02584429  # physical open / ROS q=0 encoder [rad]
     position_scale: 0.040543259557  # metres per encoder radian
     motor_position_min: -0.04  # closed encoder stop [rad]
-    motor_position_max: 0.954  # open encoder stop [rad]
+    motor_position_max: 2.02584429  # open encoder stop [rad]
     kp: 480.00
     kd: 5.0

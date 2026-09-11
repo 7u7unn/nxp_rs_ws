@@ -75,10 +75,12 @@ still be verified; a CAD comparison cannot certify the real workspace.
 
 ### Independent gripper bounds issue
 
-The recorded right-finger value was `-0.0002782029 m`, below its URDF minimum
-of zero. Offline full-robot bounds checks reject that state. The base contact
-reproduces even with finger position set to zero, so this is a separate issue.
-No automatic calibration change, feedback clamp, or limit relaxation was made.
+At the time of this investigation, the recorded right-finger value was
+`-0.0002782029 m`, below the then-URDF minimum of zero. Offline full-robot
+bounds checks rejected that state. The base contact reproduced even with the
+finger position set to zero, so this was a separate issue. A later calibration
+rebased physical open to ROS zero and expanded the configured travel range;
+the historical observation is retained here for context.
 
 ## Validation and deployment
 

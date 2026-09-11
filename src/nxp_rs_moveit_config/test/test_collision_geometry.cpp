@@ -88,7 +88,7 @@ TEST(CollisionGeometry, GenuineBaseFingerIntersectionStillRejected)
 TEST(CollisionGeometry, RecordedFingerBoundsViolationRemainsVisible)
 {
   auto scene = makeScene();
-  check(*scene, measured, -.00027820288460854393);
+  check(*scene, measured, -.001);
   EXPECT_FALSE(scene->getCurrentState().satisfiesBounds());
   check(*scene, measured, 0.0);
   EXPECT_TRUE(scene->getCurrentState().satisfiesBounds());

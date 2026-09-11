@@ -91,7 +91,7 @@ class JogControllerNode(Node):
         )
         arm_margin = float(self.declare_parameter("arm_limit_margin", 0.02).value)
         gripper_margin = float(
-            self.declare_parameter("gripper_limit_margin", 0.001).value
+            self.declare_parameter("gripper_limit_margin", 0.0).value
         )
         self._arm_step = float(self.declare_parameter("arm_step", 0.05).value)
         self._gripper_step = float(

@@ -1,11 +1,11 @@
 # Graph Report - nxp_rs_ws  (2026-09-11)
 
 ## Corpus Check
-- 65 files · ~41,449 words
+- 65 files · ~41,304 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 789 nodes · 1282 edges · 68 communities (53 shown, 15 thin omitted)
+- 788 nodes · 1281 edges · 68 communities (53 shown, 15 thin omitted)
 - Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 137 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
@@ -16,7 +16,7 @@
 
 ## Community Hubs (Navigation)
 - display.launch.py
-- RobotConfig
+- robstride_bus.hpp
 - gazebo_inertia.launch.py
 - Graphify Trigger
 - ament_cmake dependency
@@ -26,7 +26,7 @@
 - MotorConfig
 - robstride_system.cpp
 - MotorLimits
-- string
+- BusConfig
 - EncoderReaderNode
 - graphify reference: extra exports and benchmark
 - rs_scan.cpp
@@ -43,7 +43,7 @@
 - extraction-spec.md
 - nxp_rs_moveit_config
 - demo.launch.py
-- RobstrideBus
+- bus.py
 - RobstrideBus
 - PythonRobstrideNode
 - JogTargetState
@@ -54,7 +54,7 @@
 - Findings, in priority order
 - FloorSceneNode
 - JointLimit
-- robstride_bus.hpp
+- array
 - MotorState
 - rs_jog_controller.py
 - OperationCommand
@@ -68,14 +68,14 @@
 - Q: Diagnose failed loading joint_state_broadcaster when launching hardware MoveIt read_only
 - HardwareExecutionTest
 - TEST
-- RobstrideSystem::read
+- motor_config.cpp
 - hardware_moveit.launch.py
 - rs_jog.launch.py
 - rs_jog_rviz.launch.py
 - rs_python_bringup.launch.py
 - TEST
-- motor_config.cpp
-- test_python_bus.py
+- load_robot_config
+- RobstrideSystem::read
 - Q: When running MoveIt on hardware, the end effector is shaky despite reaching the goal. Could Kp/Kd cause it?
 - rs_encoder_reader.cpp
 - Q: Diagnose MoveIt plan-and-execute failure from base_link/right-finger collision
@@ -97,8 +97,6 @@
 10. `RobstrideError` - 18 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `RobstrideBus::connect()` --calls--> `disconnect`  [INFERRED]
-  src/rs_control/src/robstride_bus.cpp → src/rs_control/include/rs_control/robstride_bus.hpp
 - `RobstrideBus::scan()` --calls--> `ping`  [INFERRED]
   src/rs_control/src/robstride_bus.cpp → src/rs_control/include/rs_control/robstride_bus.hpp
 - `TEST()` --calls--> `on_init`  [INFERRED]
@@ -106,6 +104,8 @@
 - `TEST()` --calls--> `export_state_interfaces`  [INFERRED]
   src/rs_control/test/test_hardware_plugin.cpp → src/rs_control/include/rs_control/robstride_system.hpp
 - `TEST()` --calls--> `export_command_interfaces`  [INFERRED]
+  src/rs_control/test/test_hardware_plugin.cpp → src/rs_control/include/rs_control/robstride_system.hpp
+- `TEST()` --calls--> `read`  [INFERRED]
   src/rs_control/test/test_hardware_plugin.cpp → src/rs_control/include/rs_control/robstride_system.hpp
 
 ## Import Cycles
@@ -117,13 +117,13 @@
 Cohesion: 0.50
 Nodes (3): generate_launch_description(), Display the current robot description and its TF frames in RViz., Launch the robot model, joint sliders, and RViz.
 
-### Community 1 - "RobotConfig"
-Cohesion: 0.29
-Nodes (7): MotorConfig, vector, RobotConfig, bus, motors, poll_rate_hz, read_only
+### Community 1 - "robstride_bus.hpp"
+Cohesion: 0.60
+Nodes (3): optional, vector, string
 
 ### Community 6 - "robstride_bus.cpp"
-Cohesion: 0.08
-Nodes (63): BuildsExactFeedbackAndParameterFrames, BuildsExactOperationControlFrame, BuildsExactTorqueControlFrames, ComposesRobStrideExtendedCanId, DescribesStatusAndFaultBits, EncodesAndDecodesUnsignedParameters, N, optional (+55 more)
+Cohesion: 0.06
+Nodes (75): BuildsExactFeedbackAndParameterFrames, BuildsExactOperationControlFrame, BuildsExactTorqueControlFrames, ComposesRobStrideExtendedCanId, DescribesStatusAndFaultBits, EncodesAndDecodesUnsignedParameters, N, ProtocolTest (+67 more)
 
 ### Community 7 - "RobstrideSystem"
 Cohesion: 0.07
@@ -135,18 +135,18 @@ Nodes (13): MotorModel, MotorConfig, direction, has_position_limits, id, joint_n
 
 ### Community 9 - "robstride_system.cpp"
 Cohesion: 0.18
-Nodes (15): CommandInterface, InterfaceInfo, StateInterface, string, T, vector, has_interface(), parse_bool() (+7 more)
+Nodes (14): CommandInterface, InterfaceInfo, StateInterface, string, T, vector, has_interface(), parse_bool() (+6 more)
 
 ### Community 10 - "MotorLimits"
 Cohesion: 0.33
 Nodes (6): MotorLimits, kd, kp, position_rad, torque_nm, velocity_rad_s
 
-### Community 11 - "string"
-Cohesion: 0.20
-Nodes (9): milliseconds, BusConfig, bitrate, host_id, interface_name, response_timeout, string, disconnect (+1 more)
+### Community 11 - "BusConfig"
+Cohesion: 0.17
+Nodes (12): milliseconds, MotorConfig, RobotConfig, bus, motors, poll_rate_hz, read_only, BusConfig (+4 more)
 
 ### Community 12 - "EncoderReaderNode"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (11): Node, RobotConfig, RobstrideBus, SharedPtr, unique_ptr, EncoderReaderNode, bus_, config_ (+3 more)
 
 ### Community 13 - "graphify reference: extra exports and benchmark"
@@ -181,17 +181,17 @@ Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphif
 Cohesion: 0.09
 Nodes (21): Controller success was insufficiently checked, Findings, Hardware execution investigation — 2026-09-10, Independent gripper bounds issue, Simplified base geometry caused a CAD-relative false contact, Validation and deployment, 1. Requirement dan instalasi, 2. Model dan konfigurasi (+13 more)
 
-### Community 28 - "RobstrideBus"
-Cohesion: 0.05
-Nodes (67): IntEnum, DiscoveredMotor, Motor, MotorState, SocketCAN RobStride bus based on the official Python sample's API flow., Receive one matching extended frame, ignoring unrelated traffic., Read safe state parameters without enabling or commanding torque., Raised for a failed or invalid RobStride transaction. (+59 more)
+### Community 28 - "bus.py"
+Cohesion: 0.07
+Nodes (44): IntEnum, SocketCAN RobStride bus based on the official Python sample's API flow., CommunicationType, compose_extended_id(), decode_fault_report(), decode_operation_status(), decode_parameter_response(), decode_symmetric() (+36 more)
 
 ### Community 29 - "RobstrideBus"
-Cohesion: 0.17
-Nodes (11): RobstrideBus, config_, connect, disable, enable, read_encoder, read_status, scan (+3 more)
+Cohesion: 0.10
+Nodes (22): DiscoveredMotor, Motor, MotorState, Receive one matching extended frame, ignoring unrelated traffic., Read safe state parameters without enabling or commanding torque., Raised for a failed or invalid RobStride transaction., Change one motor's ID using the reference type-7 transaction., One shared SocketCAN connection for any number of motors. Transactions are… (+14 more)
 
 ### Community 30 - "PythonRobstrideNode"
-Cohesion: 0.09
-Nodes (21): Any, _as_bool(), _as_finite(), ConfigurationError, load_robot_config(), MotorConfig, YAML configuration and joint/motor calibration for the Python driver., Load and validate the shared ``robstride.yaml`` format. (+13 more)
+Cohesion: 0.08
+Nodes (25): Any, _as_bool(), _as_finite(), ConfigurationError, load_robot_config(), MotorConfig, YAML configuration and joint/motor calibration for the Python driver., Load and validate the shared ``robstride.yaml`` format. (+17 more)
 
 ### Community 31 - "JogTargetState"
 Cohesion: 0.10
@@ -206,8 +206,8 @@ Cohesion: 0.12
 Nodes (9): JogMotionProfile, Jerk-limited one-dimensional profile used by the interactive jogger. The…, Initialize a profile from a feedback sample., Set a bounded target and return ``(applied_target, was_clamped)``. The target…, Request a stop at the reachable braking point for current velocity., Return a profile copy for previewing a future state., Return the position and velocity after ``duration`` seconds., Advance the profile and return its new position and velocity. (+1 more)
 
 ### Community 34 - "RobstrideSystem::on_activate"
-Cohesion: 0.27
-Nodes (10): CallbackReturn, disable_all_motors, read_all_initial_states, start_io_thread, stop_io_thread, RobstrideSystem::on_activate(), RobstrideSystem::on_deactivate(), RobstrideSystem::~RobstrideSystem() (+2 more)
+Cohesion: 0.21
+Nodes (12): CallbackReturn, disable_all_motors, read_all_initial_states, report_io_error, start_io_thread, stop_io_thread, RobstrideSystem::io_loop(), RobstrideSystem::on_activate() (+4 more)
 
 ### Community 35 - "TEST"
 Cohesion: 0.20
@@ -225,8 +225,8 @@ Nodes (24): AllowedCollisionMatrix, CollisionObject, size_t, addEntry(), allowPa
 Cohesion: 0.14
 Nodes (5): JointLimit, Pure target bookkeeping for the interactive RobStride jogger., Allowed command interval in the ROS joint coordinate., JogMotionProfileTest, No-ROS tests for complete-pose jog target bookkeeping.
 
-### Community 39 - "robstride_bus.hpp"
-Cohesion: 0.24
+### Community 39 - "array"
+Cohesion: 0.22
 Nodes (8): DiscoveredMotor, id, uuid, array, ProtocolFrame, data, id, length
 
 ### Community 40 - "MotorState"
@@ -278,24 +278,24 @@ Cohesion: 0.07
 Nodes (29): Future, Handle, JointTrajectoryController, NonzeroFinalVelocityRejected, RecordedShoulderAndElbowErrorsAbort, shared_ptr, SingleThreadedExecutor, SmallPersistentErrorFailsGoalDeadline (+21 more)
 
 ### Community 52 - "TEST"
-Cohesion: 0.14
-Nodes (14): ConvertsPositionVelocityAndEffort, MapsAndClampsFingerMotorLimits, MapsConfiguredFingerOpenAndClosedEndpoints, MapsJointSixPhysicalReferenceToRosZero, MotorConfigTest, RejectsDuplicateCanIds, RejectsInvalidMotorPositionLimits, RejectsMotorIdEqualToHostId (+6 more)
+Cohesion: 0.18
+Nodes (10): ConvertsPositionVelocityAndEffort, MapsAndClampsFingerMotorLimits, MapsConfiguredFingerOpenAndClosedEndpoints, MotorConfigTest, RejectsDuplicateCanIds, RejectsInvalidMotorPositionLimits, RejectsMotorIdEqualToHostId, RejectsUnassignedCanId (+2 more)
 
-### Community 53 - "RobstrideSystem::read"
-Cohesion: 0.29
-Nodes (11): Duration, return_type, MotorConfig, to_joint_effort(), to_joint_position(), to_joint_velocity(), to_motor_velocity(), RobstrideSystem::read() (+3 more)
+### Community 53 - "motor_config.cpp"
+Cohesion: 0.44
+Nodes (7): MotorConfig, to_joint_effort(), to_joint_position(), to_joint_velocity(), to_motor_position(), to_motor_velocity(), RobstrideSystem::read_all_initial_states()
 
 ### Community 58 - "TEST"
 Cohesion: 0.17
 Nodes (14): CollisionGeometry, CollisionResult, GenuineBaseFingerIntersectionStillRejected, GraspFrameIsTheArmTipBetweenFingerRoots, PlanningScene, RecordedFingerBoundsViolationRemainsVisible, RecordedPoseReproducesLegacyMeshFalsePositive, check() (+6 more)
 
-### Community 59 - "motor_config.cpp"
-Cohesion: 0.43
-Nodes (7): Node, RobotConfig, string, T, load_robot_config(), read_optional(), validate_robot_config()
+### Community 59 - "load_robot_config"
+Cohesion: 0.33
+Nodes (8): Node, RobotConfig, string, T, load_robot_config(), read_optional(), validate_robot_config(), RobstrideSystem::load_hardware_config()
 
-### Community 60 - "test_python_bus.py"
-Cohesion: 0.25
-Nodes (3): _FakeCanBus, _Message, No-hardware transaction tests for the Python RobStride bus.
+### Community 60 - "RobstrideSystem::read"
+Cohesion: 0.60
+Nodes (5): Duration, return_type, RobstrideSystem::read(), RobstrideSystem::write(), Time
 
 ### Community 61 - "Q: When running MoveIt on hardware, the end effector is shaky despite reaching the goal. Could Kp/Kd cause it?"
 Cohesion: 0.40
@@ -327,7 +327,7 @@ Nodes (4): load_hardware_config, validate_hardware_joints, HardwareInfo, Robstri
 
 ## Knowledge Gaps
 - **209 isolated node(s):** `floor_id_`, `floor_frame_`, `base_link_`, `floor_size_x_`, `floor_size_y_` (+204 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 424 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 423 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
@@ -342,11 +342,11 @@ Nodes (4): load_hardware_config, validate_hardware_joints, HardwareInfo, Robstri
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `RobstrideSystem::read()` connect `RobstrideSystem::read` to `robstride_system.cpp`?**
+- **Why does `RobstrideSystem::read()` connect `RobstrideSystem::read` to `robstride_system.cpp`, `motor_config.cpp`?**
   _High betweenness centrality (0.227) - this node is a cross-community bridge._
-- **Why does `TEST()` connect `TEST` to `motor_config.cpp`, `string`, `RobstrideSystem::read`, `robstride_bus.cpp`?**
-  _High betweenness centrality (0.116) - this node is a cross-community bridge._
-- **Why does `RobstrideSystem` connect `RobstrideSystem` to `robstride_system.hpp`, `RobstrideSystem::on_init`, `TEST`, `RobstrideSystem::on_activate`, `robstride_bus.cpp`, `TEST`?**
+- **Why does `TEST()` connect `TEST` to `load_robot_config`, `motor_config.cpp`, `robstride_bus.cpp`?**
+  _High betweenness centrality (0.114) - this node is a cross-community bridge._
+- **Why does `RobstrideSystem` connect `RobstrideSystem` to `robstride_system.hpp`, `RobstrideSystem::on_init`, `TEST`, `RobstrideSystem::on_activate`, `robstride_bus.cpp`?**
   _High betweenness centrality (0.072) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `RobstrideBus` (e.g. with `CommunicationType` and `ParameterSpec`) actually correct?**
   _`RobstrideBus` has 7 INFERRED edges - model-reasoned connections that need verification._

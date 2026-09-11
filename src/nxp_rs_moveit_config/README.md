@@ -1,122 +1,165 @@
 # nxp_rs_moveit_config
 
-MoveIt 2 configuration for the NXP RS robot, with separate simulation and
-physical-hardware launch paths.
+Konfigurasi MoveIt 2 untuk robot NXP RS. Paket ini menyediakan dua alur yang
+terpisah:
 
-The physical launch uses the `rs_control/RobstrideSystem` ros2_control plugin
-and the configured SocketCAN interface. It is read-only by default.
+- `demo.launch.py`: MoveIt dengan `mock_components/GenericSystem`, tanpa CAN dan
+  tanpa motor fisik;
+- `hardware_moveit.launch.py`: MoveIt dengan plugin hardware
+  `rs_control/RobstrideSystem` melalui SocketCAN.
 
-The physical launch automatically uses the installed
-`rs_control/config/robstride.yaml`. A `config_file:=/absolute/path/to/robstride.yaml`
-argument is optional and is only needed for a separate deployment or
-calibration file.
+`arm` adalah chain enam joint dari `base_link` ke `grasp_frame`. Gripper hanya
+menggerakkan `joint_right-finger`; `joint_left-finger` adalah joint mimic.
+`grasp_frame` berada di tengah kedua finger dan menjadi tip arm.
 
-The simulation launch uses:
+## 1. Requirement dan instalasi
 
-- the existing `nxp_rs.xacro` model;
-- an SRDF `arm` group from `base_link` to the fixed `grasp_frame` between the
-  fingers;
-- the existing mimic relationship for the left finger;
-- `mock_components/GenericSystem` and simulated ROS 2 controllers.
+### Platform dan dependency
 
-Both MoveIt launch modes also add a `nxp_rs_floor` collision box whose top
-surface is at `z=0` in the `world` frame. The existing planning-scene Allowed
-Collision Matrix is preserved, with only the fixed `base_link`/floor contact
-allowed. Moving links remain forbidden from intersecting the floor. Adjust
-`config/floor_scene.yaml` if the physical mounting height or floor frame
-changes.
+- Ubuntu 22.04
+- ROS 2 Humble
+- Workspace ini (`/home/jundi/nxp_rs_ws`)
+- Untuk demo: MoveIt 2, `ros2_control`, controller manager, RViz, dan Xacro
+- Untuk hardware: seluruh dependency demo ditambah `rs_control`, SocketCAN, dan
+  konfigurasi motor yang sudah dikalibrasi
+- Untuk scene inspeksi inertia Gazebo: `gazebo_ros` (sudah dicakup oleh
+  `rosdep` dari package `nxp_rs_description`)
 
-`grasp_frame` is a non-actuated fixed link centered between the right and left
-finger CAD envelopes. It is the arm group's tip and the `gripper_eef` parent
-frame, so MoveIt target poses are expressed at the grasp center rather than at
-the palm/wrist area.
+Jika ROS 2 Humble belum terpasang, ikuti [panduan instalasi resmi untuk Ubuntu
+22.04](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html)
+terlebih dahulu.
 
-It does not include `rs_control/RobstrideSystem`, open SocketCAN, or send motor
-commands. The physical launch uses the real hardware plugin and is documented
-below.
+Dependency runtime dan test tercantum di `package.xml`. Jangan memasang library
+Python MoveIt secara manual dengan `pip`; gunakan paket ROS dan `rosdep`.
 
-## Install and build
+Runtime utama yang dipasang oleh `rosdep` mencakup `moveit_msgs`,
+`moveit_configs_utils`, `moveit_ros_move_group`, `moveit_ros_visualization`,
+`moveit_simple_controller_manager`, `ros2_control`, `controller_manager`,
+`joint_state_broadcaster`, `joint_trajectory_controller`, `rviz2`, `tf2_ros`,
+`geometry_msgs`, `shape_msgs`, `rclcpp`, `xacro`, `robot_state_publisher`,
+serta dependency `nxp_rs_description` (`joint_state_publisher_gui` dan
+`gazebo_ros`) dan `rs_control`. Dependency lint/test juga diambil dari
+`package.xml` saat `rosdep install` dijalankan.
+
+### Pasang tool sistem
 
 ```bash
-sudo apt install ros-humble-moveit
+sudo apt update
+sudo apt install -y \
+  python3-colcon-common-extensions \
+  python3-rosdep \
+  python3-pytest \
+  can-utils
+```
+
+`can-utils` hanya dipakai untuk diagnostik CAN hardware. Jika `rosdep` belum
+pernah diinisialisasi:
+
+```bash
+sudo rosdep init
+rosdep update
+```
+
+Lewati `rosdep init` jika sudah pernah berhasil.
+
+### Pasang dependency ROS dan build
+
+```bash
 cd /home/jundi/nxp_rs_ws
 source /opt/ros/humble/setup.bash
+rosdep install --from-paths src --ignore-src --rosdistro humble -r -y
 colcon build --symlink-install --packages-up-to nxp_rs_moveit_config
 source install/setup.bash
 ```
 
-## Run the simulation-only MoveIt demo
+`rosdep install` memasang dependency eksternal MoveIt (`moveit_msgs`,
+`moveit_configs_utils`, `move_group`, RViz, dan controller manager),
+`ros2_control`, controller trajectory, serta dependency `nxp_rs_description`
+dan `rs_control`. Kedua paket lokal tersebut kemudian dibangun oleh `colcon`.
+
+Di terminal baru, source ulang:
+
+```bash
+source /opt/ros/humble/setup.bash
+source /home/jundi/nxp_rs_ws/install/setup.bash
+```
+
+## 2. Model dan konfigurasi
+
+| Item | Lokasi / nilai |
+| --- | --- |
+| URDF + ros2_control simulasi | [`config/nxp_rs_moveit.urdf.xacro`](config/nxp_rs_moveit.urdf.xacro) |
+| SRDF group | [`config/nxp_rs.srdf`](config/nxp_rs.srdf) |
+| Batas joint MoveIt | [`config/joint_limits.yaml`](config/joint_limits.yaml) |
+| Kinematika | [`config/kinematics.yaml`](config/kinematics.yaml) |
+| Controller MoveIt | [`config/moveit_controllers.yaml`](config/moveit_controllers.yaml) |
+| Scene lantai | [`config/floor_scene.yaml`](config/floor_scene.yaml) |
+| Overlay tolerance hardware (opsional) | [`config/hardware_execution.yaml`](config/hardware_execution.yaml) |
+
+Scene menambahkan collision box `nxp_rs_floor` dengan permukaan atas di `z=0`
+frame `world`. Hanya kontak tetap `base_link`/floor yang diizinkan oleh scene;
+link bergerak tetap harus bebas collision.
+
+Setelah mengubah URDF, SRDF, mesh, atau YAML, hentikan dan jalankan ulang semua
+node yang membaca model. Proses yang sedang berjalan menyimpan model lama.
+
+## 3. Demo MoveIt tanpa hardware
+
+Demo ini memakai mock ros2_control. Ia cocok untuk memeriksa planning group,
+kinematika, collision scene, dan integrasi controller, tetapi bukan simulasi
+fisika motor dan tidak membuka SocketCAN.
+
+Dengan RViz:
 
 ```bash
 ros2 launch nxp_rs_moveit_config demo.launch.py
 ```
 
-For a headless smoke test that starts MoveIt and the fake controllers without
-RViz:
+Headless smoke test:
 
 ```bash
 ros2 launch nxp_rs_moveit_config demo.launch.py rviz:=false
 ```
 
-In RViz, choose the `arm` planning group in the MotionPlanning panel, set a
-target pose or joint target, click **Plan**, and then **Execute**. The motion
-is sent to the mock `arm_controller`; no physical motor is involved.
+Di RViz, pilih group `arm`, gunakan start state aktual dari model, tetapkan
+target pose/joint, lalu **Plan** dan **Execute**. Eksekusi hanya dikirim ke
+`mock_components/GenericSystem`; tidak ada gerakan motor fisik.
 
-After changing the URDF or SRDF, restart MoveIt/RViz. Existing processes keep
-the old robot model until they are shut down and relaunched.
+## 4. Hardware MoveIt
 
-## Move the physical robot from MoveIt
+### Preflight keselamatan
 
-Use this procedure for the first real-robot test. The physical MoveIt launch
-owns the hardware, controller manager, robot state publisher, controllers,
-MoveIt, and RViz. Run only one of these owners at a time:
-`hardware_moveit.launch.py`, `rs_bringup.launch.py`, or another physical jog
-bringup. Running two of them creates duplicate `/controller_manager` and
-`/joint_state_broadcaster` nodes and causes controller loading to fail.
+Sebelum mengaktifkan torque:
 
-The commands use the installed
-`rs_control/config/robstride.yaml` automatically. No
-`config_file:=...` argument is required for the normal deployment.
+- hentikan semua `rs_bringup`, Python controller, jogger, MoveIt hardware, dan
+  launch fisik lain;
+- pastikan hanya ada satu `/controller_manager`, satu
+  `/joint_state_broadcaster`, dan satu `robot_state_publisher`;
+- dukung arm secara mekanis, kosongkan area gerak, dan siapkan emergency stop;
+- verifikasi CAN, ID, arah, offset, limit, serta posisi awal aktual.
 
-### 1. Stop other physical launch files
+Jangan memakai `demo.launch.py` bersamaan dengan hardware launch dalam ROS domain
+yang sama karena nama controller dan topic bertabrakan.
 
-Stop any running `rs_bringup`, jogger, physical RViz, or previous
-`hardware_moveit` session with `Ctrl+C`. Do not use
-`nxp_rs_description display.launch.py` for this procedure because it starts a
-separate robot state publisher and slider GUI.
-Also stop the MoveIt simulation demo in the same ROS domain: its controller
-and joint-state names overlap with hardware.
+### Periksa SocketCAN
 
-After starting MoveIt, `ros2 node list` must contain exactly one
-`/controller_manager`, `/robot_state_publisher`, and `/joint_state_broadcaster`.
-
-### 2. Check the CAN interface
-
-The ROS launch files expect the operating system to configure SocketCAN before
-they start. Check that `can0` is up with the motor bus bitrate:
+Launch tidak mengatur bitrate secara otomatis. Periksa dan, bila aman, aktifkan
+interface:
 
 ```bash
 ip -details link show can0
-```
-
-The expected state is `UP`, `ERROR-ACTIVE`, and `bitrate 1000000`. If the
-interface is down and the CAN wiring and power are safe, configure it once for
-the current session:
-
-```bash
 sudo ip link set can0 up type can bitrate 1000000
 ```
 
-For deployment, test the udev/systemd configuration after both reboot and USB
-adapter reconnect. The ROS launch does not set the CAN bitrate for you.
+Konfigurasi motor bawaan adalah
+[`rs_control/config/robstride.yaml`](../rs_control/config/robstride.yaml). Gunakan
+`config_file:=/absolute/path/to/robstride.yaml` jika deployment memakai file lain.
 
-### 3. Start read-only MoveIt and inspect the real pose
+### Mulai read-only
 
-Keep the robot in a safe, supported position and start the read-only launch:
+Mulai dengan torque dan controller gerak nonaktif:
 
 ```bash
-source /opt/ros/humble/setup.bash
-source /home/jundi/nxp_rs_ws/install/setup.bash
 ros2 launch nxp_rs_moveit_config hardware_moveit.launch.py \
   can_interface:=can0 \
   read_only:=true \
@@ -124,54 +167,24 @@ ros2 launch nxp_rs_moveit_config hardware_moveit.launch.py \
   rviz:=true
 ```
 
-`read_only:=true` does not enable motors or send operation-control commands; it
-only reads encoder status. Start it only after stopping any previous physical
-bringup so another process is not still holding motor torque.
-`enable_control:=false` prevents the physical arm and gripper trajectory
-controllers from being spawned. It is a controller-spawn option; it is not a
-replacement for `read_only`.
-
-From a second terminal with the same ROS environment, check:
+Verifikasi dari terminal lain:
 
 ```bash
-source /opt/ros/humble/setup.bash
-source /home/jundi/nxp_rs_ws/install/setup.bash
 ros2 node list
 ros2 control list_hardware_components --verbose
 ros2 control list_controllers
 ros2 topic echo --once /joint_states
 ```
 
-Before continuing, verify that:
+Sebelum lanjut, `robstride_system` harus `active`, state interface harus
+`available`, posisi joint harus stabil, dan RViz harus sama dengan pose fisik.
+Di panel **MotionPlanning**, gunakan start state **Current**. Lakukan **Plan**
+saja pada tahap ini; jangan **Execute**.
 
-- `robstride_system` is `active` and all state interfaces are `available`;
-- `joint_state_broadcaster` is `active`;
-- joint positions are updating and stable;
-- there is only one controller manager and one state publisher;
-- RViz shows the physical robot at the same pose as the real robot.
+### Aktifkan kontrol posisi
 
-Inspect RViz's collision geometry as well as the visual robot. During this
-commissioning phase, every link uses its visual CAD mesh for collision
-checking, including the base and fingers. This avoids the false base/finger
-contact from the former simplified geometry, but it still requires verification
-against the physical assembly, including brackets, wiring, and obstacles.
-
-### 4. Set the MoveIt start state correctly
-
-In RViz's **MotionPlanning** panel, select the `arm` group and set the start
-state to **Current**. The current robot model must match the real joint
-positions. The straight-up pose or the SRDF `home` pose is a possible planning
-goal; it is not an automatic startup pose and must not be used as the start
-state unless the physical robot is actually there.
-
-Use **Plan** only during this read-only stage. Do not execute a trajectory yet.
-
-### 5. Enable physical position control
-
-Before enabling, check the emergency-stop path, clear the workspace, support
-the arm if gravity can make it drop, and keep the E-stop reachable. Stop the
-read-only launch with `Ctrl+C`, wait for its nodes to exit, and start one fresh
-physical MoveIt instance:
+Setelah preflight dan read-only berhasil, hentikan launch dengan `Ctrl+C`,
+tunggu semua node keluar, lalu mulai satu instance baru:
 
 ```bash
 ros2 launch nxp_rs_moveit_config hardware_moveit.launch.py \
@@ -181,109 +194,68 @@ ros2 launch nxp_rs_moveit_config hardware_moveit.launch.py \
   rviz:=true
 ```
 
-Warning: `read_only:=false` enables the motors during hardware activation even
-if `enable_control:=false`. The driver reads the encoder positions before
-enabling and initializes its position commands from those measurements, so the
-launch does not command the robot to the straight-up or `home` pose. The
-configured reference gains (`kp: 500`, `kd: 5`) are applied immediately,
-however. A calibration error or a pose change while enabling can produce a
-strong holding correction; treat motor activation as motion-capable and be
-ready to press the E-stop.
+`read_only:=false` mengaktifkan motor saat hardware diaktifkan. `enable_control`
+hanya menentukan apakah `arm_controller` dan `gripper_controller` di-spawn;
+keduanya harus `true` untuk menerima trajectory.
 
-Confirm the enabled controllers before sending a goal:
+Periksa controller sebelum command pertama:
 
 ```bash
 ros2 control list_hardware_components --verbose
 ros2 control list_controllers
 ```
 
-The expected controllers are `joint_state_broadcaster`, `arm_controller`, and
-`gripper_controller`, all `active`. MoveIt maps the arm and gripper groups to
-their respective `FollowJointTrajectory` action servers.
+Controller yang diharapkan adalah `joint_state_broadcaster`, `arm_controller`,
+dan `gripper_controller`, semuanya `active`.
 
-The reference-style physical launch intentionally does not load the optional
-`config/hardware_execution.yaml` strict-tolerance overlay. Check that the
-active controller uses the reference-compatible loop settings after restarting:
+### Gerakan pertama
 
-```bash
-ros2 param get /controller_manager update_rate
-ros2 param get /arm_controller state_publish_rate
-ros2 param get /arm_controller open_loop_control
-```
-
-Expected values are `100`, `100.0`, and `true`, respectively. Editing YAML or
-rebuilding does not change parameters or robot geometry in an already running
-launch. The optional overlay remains available for offline commissioning tests,
-but its nonzero path/goal tolerances are deliberately not part of the normal
-reference-style hardware launch.
-
-### 6. Execute the first motion
-
-Start with one joint and a target approximately `0.01`--`0.02 rad` from its
-measured current position, well inside the configured limits. Use the lowest
-available velocity and acceleration scaling. Click **Plan**, inspect the
-trajectory and start point in RViz, then click **Execute**.
-
-After **every** execution, inspect feedback before planning again:
+Gunakan satu joint dengan target hanya `0.01`--`0.02 rad` dari posisi yang
+terukur, gunakan velocity/acceleration scaling terendah, periksa trajectory di
+RViz, lalu **Execute**. Setelah setiap eksekusi periksa feedback:
 
 ```bash
 ros2 topic echo --once /arm_controller/controller_state
 ros2 topic echo --once /joint_states
 ```
 
-Compare `desired.positions`, `actual.positions`, and `error.positions` in
-joint-name order. Confirm the measured joints are stable over several samples,
-then refresh the RViz start state to **Current** and create a new plan. Do not
-reuse the previous trajectory. `SUCCEEDED` is not a continuous holding or
-collision-safety guarantee.
+Hentikan segera dengan emergency stop jika robot menarik ke pose yang salah,
+bergetar, bergerak terlalu jauh, atau CAN keluar dari `ERROR-ACTIVE`. Setelah
+uji selesai, stop gerak dan shutdown launch dengan `Ctrl+C` agar hardware
+dinonaktifkan.
 
-Stop immediately with the E-stop if the robot pulls toward an unexpected pose,
-vibrates, moves more than expected, or if the CAN state leaves `ERROR-ACTIVE`.
-After a normal test, cancel/stop the motion and shut down the launch with
-`Ctrl+C`; this lets the hardware plugin deactivate and disable the motors.
-Arrange mechanical support first: controller cancel/abort can reset its hold
-target to the measured pose, reducing load-supporting torque, and shutdown
-disables the motors. Software cancellation is not a safety-rated stop.
+Launch hardware tidak memuat overlay tolerance ketat secara default. Gunakan
+[`config/hardware_execution.yaml`](config/hardware_execution.yaml) hanya dalam
+commissioning terkontrol setelah tuning; tolerance tidak memperbaiki gain,
+tracking, atau collision safety.
 
-## Execution checks and troubleshooting
+## 5. Troubleshooting singkat
 
-The normal reference-style hardware launch leaves JTC path/goal position
-tolerances at their defaults (zero disables those checks). This avoids turning
-the position-only driver’s tracking error into an abort/hold-position reset,
-but it does **not** certify tracking accuracy. Use the optional
-`config/hardware_execution.yaml` overlay only during a supported commissioning
-test after motor tuning. It rejects substantial tracking error; it cannot
-correct motor tuning or guarantee collision clearance. Jogging and simulation
-retain their separate configurations.
+- **Controller gagal di-spawn:** pastikan tidak ada launch fisik/simulasi lain
+  yang masih berjalan.
+- **Start point berbeda dari robot:** tunggu feedback stabil, pilih start state
+  **Current**, lalu plan ulang.
+- **`PATH_TOLERANCE_VIOLATED` atau `GOAL_TOLERANCE_VIOLATED`:** bandingkan
+  `desired`, `actual`, dan `error`; selidiki calibration, gain, beban, dan
+  mekanik sebelum mengubah tolerance.
+- **Collision aneh pada base/finger:** rebuild description dan MoveIt, restart
+  semua node, lalu periksa mesh, frame, arah joint, dan clearance fisik.
+- **Finger di luar rentang `0.0 m` sampai `0.0837560613 m`:** periksa
+  kembali zero dan pemetaan finger; jangan memperlebar limit untuk menutupi
+  error kalibrasi.
 
-- **`PATH_TOLERANCE_VIOLATED` / `GOAL_TOLERANCE_VIOLATED`:** compare measured and
-  commanded positions. Do not increase tolerances to hide persistent error.
-  With the present position-only driver, low motor stiffness and no gravity
-  feedforward can leave a loaded joint away from the requested position.
-  Tune only in a supported, controlled commissioning procedure.
-- **Start point deviates more than `0.01`:** wait for stable feedback, select
-  **Current**, and replan. If it recurs, investigate drift/tracking/calibration;
-  do not disable the start-state check.
-- **Base/finger contact with no observed contact:** rebuild both description
-  and MoveIt config, then restart all model-consuming nodes. The corrected
-  base mesh preserves collision checking for this pair. If it still occurs,
-  inspect collision geometry, joint zero/sign mapping, and actual clearance;
-  do not add an SRDF collision exemption.
-- **Finger below its lower limit:** the captured encoder value was
-  `-0.0002782 m` although its lower bound is `0`. Verify gripper zero calibration
-  and mapping physically. Do not widen limits or clamp feedback to hide it.
+Laporan investigasi detail tersedia di
+[`docs/execution_investigation_2026-09-10.md`](docs/execution_investigation_2026-09-10.md).
 
-In the installed Humble JTC 2.53.1, `open_loop_control: true` preserves the
-command reference at trajectory replacement but **still checks measured
-position error**. It remains enabled deliberately. This position-only
-configuration does not independently enforce measured stopping velocity via
-`stopped_velocity_tolerance`; check actual velocity and settling separately.
-There is also no continuous position-tolerance enforcement after success.
+## 6. Testing
 
-See [the investigation and evidence](docs/execution_investigation_2026-09-10.md).
-Offline regression tests use in-memory joints and CAD geometry, not CAN:
+Test berikut tidak memerlukan CAN atau motor hidup:
 
 ```bash
+cd /home/jundi/nxp_rs_ws
+source /opt/ros/humble/setup.bash
+source install/setup.bash
 colcon test --packages-select nxp_rs_moveit_config
-colcon test-result --test-result-base build/nxp_rs_moveit_config --verbose
+colcon test-result \
+  --test-result-base build/nxp_rs_moveit_config --verbose
 ```

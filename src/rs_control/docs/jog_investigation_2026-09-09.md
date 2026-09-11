@@ -237,17 +237,24 @@ operator controlling motion.
 
 During RViz verification, the operator reported that joints 1, 2, 3, and 6
 and the finger moved opposite to the URDF positive direction. The shared motor
-configuration now uses `direction: -1` for those five actuators. Their
-revolute limits in `joints.yaml`, the visual URDF, and MoveIt limits are
-reflected to match the converted ROS coordinates. For the finger, the mapping
-treats raw `0.954 rad` as open and `-0.04 rad` as closed so the ROS convention
-remains `0.0 m` open and `0.0403 m` closed; this endpoint assignment is an
-assumption from the direction report and must be verified physically.
+configuration uses `direction: -1` for those five actuators. Their revolute
+limits in `joints.yaml`, the visual URDF, and MoveIt limits are reflected to
+match the converted ROS coordinates. The follow-up `/joint_states` check found
+the physical finger open position at `-0.0434560613 m` in the previous ROS
+frame. The mapping now uses raw `2.02584429 rad` as open and ROS `0.0 m`, with
+raw `-0.04 rad` as closed and ROS `0.0837560613 m`. The jogger's default finger
+margin is zero so the measured open endpoint is reachable; use a positive
+margin when protecting a hard stop.
 
 This calibration must be checked with a small, unloaded jog after restarting
 the bringup. If the finger's physical open/closed endpoint labels differ from
 that observation, stop and correct only the finger offset/sign before using
 MoveIt; do not bypass the configured limits.
+
+The same zero-reference check was applied to joint 6: its physical reference
+pose had been reported as ROS `0.767354 rad` with the old encoder offset
+`0.929 rad`. Motor 6 now uses raw `0.161645692 rad` as ROS/RViz zero, while its
+raw stops remain `-2.22` and `4.169 rad`.
 
 ## Follow-up activation log
 

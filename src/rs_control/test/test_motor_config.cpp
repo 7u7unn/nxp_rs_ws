@@ -77,6 +77,44 @@ TEST(MotorConfigTest, MapsAndClampsFingerMotorLimits)
   EXPECT_DOUBLE_EQ(to_motor_position(motor, 1.5), 4.14);
 }
 
+TEST(MotorConfigTest, MapsConfiguredFingerOpenAndClosedEndpoints)
+{
+  constexpr double kOpenPosition = 0.0;
+  constexpr double kClosedPosition = 0.0837560613;
+  constexpr double kOpenMotorPosition = 2.02584429;
+  MotorConfig motor;
+  motor.direction = -1;
+  motor.position_offset = kOpenMotorPosition;
+  motor.position_scale = 0.040543259557;
+  motor.has_position_limits = true;
+  motor.motor_position_min = -0.04;
+  motor.motor_position_max = kOpenMotorPosition;
+
+  EXPECT_NEAR(to_joint_position(motor, kOpenMotorPosition), kOpenPosition, 1e-9);
+  EXPECT_NEAR(to_joint_position(motor, -0.04), kClosedPosition, 1e-9);
+  EXPECT_NEAR(to_motor_position(motor, kOpenPosition), kOpenMotorPosition, 1e-9);
+  EXPECT_NEAR(to_motor_position(motor, kClosedPosition), -0.04, 1e-9);
+}
+
+TEST(MotorConfigTest, MapsJointSixPhysicalReferenceToRosZero)
+{
+  constexpr double kZeroEncoder = 0.161645692;
+  constexpr double kLowerPosition = -4.007354308;
+  constexpr double kUpperPosition = 2.381645692;
+  MotorConfig motor;
+  motor.direction = -1;
+  motor.position_offset = kZeroEncoder;
+  motor.position_scale = 1.0;
+  motor.has_position_limits = true;
+  motor.motor_position_min = -2.22;
+  motor.motor_position_max = 4.169;
+
+  EXPECT_NEAR(to_joint_position(motor, kZeroEncoder), 0.0, 1e-9);
+  EXPECT_NEAR(to_joint_position(motor, -2.22), kUpperPosition, 1e-9);
+  EXPECT_NEAR(to_joint_position(motor, 4.169), kLowerPosition, 1e-9);
+  EXPECT_NEAR(to_motor_position(motor, 0.0), kZeroEncoder, 1e-9);
+}
+
 TEST(MotorConfigTest, RejectsMotorIdEqualToHostId)
 {
   RobotConfig config;

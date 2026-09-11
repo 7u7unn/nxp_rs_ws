@@ -75,39 +75,42 @@ joints:
 
   joint-6:
     id: 6
+    # The physical reference pose previously reported ROS q=0.767354 rad
+    # with encoder zero 0.929 rad. Rebase that pose to ROS/RViz zero.
     encoder:
-      zero_position_rad: 0.929
+      zero_position_rad: 0.161645692
       lower_stop_rad: -2.22
       upper_stop_rad: 4.169
     urdf:
       type: revolute
-      lower_rad: -3.24
-      upper_rad: 3.149
+      lower_rad: -4.007354308
+      upper_rad: 2.381645692
 
   # Motor 7 is rotational at the encoder, while the robot model exposes the
   # driven right finger as a prismatic joint. Its prismatic coordinate is
-  # anchored at the measured open position (0 m). To match the reported
-  # direction, raw 0.954 rad is treated as open and raw -0.04 rad as closed;
-  # verify these endpoint labels on the physical mechanism. The
-  # encoder-relative revolute interval is retained below for reference.
+  # anchored at the physical open endpoint so ROS/RViz reports that pose as
+  # zero. The measured open-position sample was -0.043456 m in the previous
+  # ROS frame and maps to raw 2.025844 rad. Raw -0.04 rad remains the closed
+  # endpoint; with the existing scale this gives 0.083756 m of travel.
+  # Confirm both endpoints on the physical mechanism after restarting bringup.
   joint_right-finger:
     id: 7
     encoder_type: revolute
     urdf_type: prismatic
     encoder:
-      zero_position_rad: 0.601
-      open_stop_rad: 0.954
+      zero_position_rad: 2.02584429
+      open_stop_rad: 2.02584429
       close_stop_rad: -0.04
     encoder_joint_limits:
-      lower_rad: -0.641
-      upper_rad: 0.353
+      lower_rad: -2.06584429
+      upper_rad: 0.0
     physical:
       open_position_m: 0.0
-      close_position_m: 0.0403
+      close_position_m: 0.0837560613
     urdf:
       type: prismatic
       lower_m: 0.0
-      upper_m: 0.0403
+      upper_m: 0.0837560613
       position_scale_m_per_encoder_rad: 0.040543259557
 
   joint_left-finger:
@@ -117,5 +120,5 @@ joints:
       multiplier: -1.0
     urdf:
       type: prismatic
-      lower_m: -0.0403
+      lower_m: -0.0837560613
       upper_m: 0.0

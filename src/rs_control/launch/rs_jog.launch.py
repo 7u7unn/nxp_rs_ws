@@ -43,7 +43,14 @@ def generate_launch_description():
             DeclareLaunchArgument("max_arm_target_lead", default_value="0.25"),
             DeclareLaunchArgument("max_gripper_target_lead", default_value="0.01"),
             DeclareLaunchArgument("arm_limit_margin", default_value="0.02"),
-            DeclareLaunchArgument("gripper_limit_margin", default_value="0.001"),
+            DeclareLaunchArgument(
+                "gripper_limit_margin",
+                default_value="0.0",
+                description=(
+                    "Inward finger safety margin in metres; use a positive "
+                    "value when keeping clear of a hard stop."
+                ),
+            ),
             Node(
                 package="rs_control",
                 executable="rs_jog_controller",
